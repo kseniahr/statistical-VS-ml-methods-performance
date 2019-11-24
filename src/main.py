@@ -1,196 +1,31 @@
-# Import libaries
-import pandas as pd
-import numpy as np
-import random
-# Import scripts
-import functions as f
 # Import Machine Learning models
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-
-
-# Call np.random.seed() to make examples with (pseudo) random data reproducible:
-np.random.seed(1234)
-
-
-# Define data generation parameters for year 1
-N = 10000 # Observations in the population
-n = 1000  # Observations in each sample
-k = 10   # Number of samples
-t = 5    # Number of years
-
-parameters = [N, n, k, t]
 
 # Initialize X1, X2 and X3 with zeros as a starting point
 independent_vars = [0,0,0]
 
 #-------------------------------------------------------------------------------
 
-# Define regressions coefficients for the 1st year
-intercept_y1                 = 0
-beta1_y1, beta2_y1, beta3_y1 = 1, 0, -1
-error_sd_y1                  = 1
-
-# Create a list of predefined coefficients
-coefficients_y1 = [intercept_y1, beta1_y1, beta2_y1, beta3_y1, error_sd_y1]
-
-#-------------------------------------------------------------------------------
-
-# Define regressions coefficients for years 2 to 5
-intercept_y2                 = 0
-beta1_y2, beta2_y2, beta3_y2 = 1.1, 0, -1
-error_sd_y2                  = 1
-coefficients_y2 = [intercept_y2, beta1_y2, beta2_y2, beta3_y2, error_sd_y2]
-#-------------------------------
-intercept_y3                 = 0
-beta1_y3, beta2_y3, beta3_y3 = 1.3, 0, -1
-error_sd_y3                  = 1
-coefficients_y3 = [intercept_y3, beta1_y3, beta2_y3, beta3_y3, error_sd_y3]
-#-------------------------------
-intercept_y4                 = 0
-beta1_y4, beta2_y4, beta3_y4 = 1, 0, -1
-error_sd_y4                  = 1
-coefficients_y4 = [intercept_y4, beta1_y4, beta2_y4, beta3_y4, error_sd_y4]
-#-------------------------------
-intercept_y5                 = 0
-beta1_y5, beta2_y5, beta3_y5 = 1, 0, -1
-error_sd_y5                  = 1
-coefficients_y5 = [intercept_y5, beta1_y5, beta2_y5, beta3_y5, error_sd_y5]
-
-#-------------------------------------------------------------------------------
-
-# Initialize a list of coefficients for each year
-coefficients = [coefficients_y1, coefficients_y2, coefficients_y3, coefficients_y4, coefficients_y5]
-
-# Initialize a collection of all t populations as a dictionaty
-populations_collection = {}
-
-# Initialize a collection of samples from each population
-samples_list_collection = {}
-
-
-# This loop simulates future populations for t years. Also it creates k samples for each year with n observations in each sample.
-for t in range (0, parameters[3]):
-
-    # Generate exogene variables (including latent variables like prediction-error)
-    independent_vars, error, Y = f.generate_vars(parameters, coefficients[t], independent_vars)
-
-    # Combine dependent and independent variables in a data-frame
-    populations_collection[t] = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y, 'error': error})
-
-    # Create k samples with n observations using random.sample
-    samples_list_collection[t] = f.draw_k_samples(parameters, populations_collection[t])
-
-
-# Next we want to fit chosen models on each sample of t populations
-# Linear Regression, Random Forest Regressor, Gradient Boosting Regressor
-
-
-mlr = LinearRegression()
-rfr  = RandomForestRegressor()
-gbr  = GradientBoostingRegressor()
+# Define which models are going to be tested
+mlr = LinearRegression() # statistical model
+rfr  = RandomForestRegressor() # ML model
+gbr  = GradientBoostingRegressor() # ML model
 
 my_models = [mlr, rfr, gbr]
 
-population_scores_mlr = {}
-population_scores_rfr = {}
-population_scores_gbr = {}
+#-------------------------------------------------------------------------------
 
-#---------------------------------------------------------
-# Fit Linear Regression to all samples of Y1
-#---------------------------------------------------------
+# Define data generation parameters for year 1
+N = 1000 # Observations in the population
+n = 100  # Observations in each sample
+k = 10   # Number of samples
+t = 4    # Number of years
 
+parameters = [N, n, k, t]
 
-for t in range (0, parameters[3]):
-    population_scores_mlr[t] =  f.fit_lr(parameters, samples_list_collection[t], my_models[0])
-    population_scores_rfr[t] =  f.fit_rfr(parameters, samples_list_collection[t], my_models[1])
-    population_scores_gbr[t] =  f.fit_gbr(parameters, samples_list_collection[t], my_models[2])
+import study_1
+import study_2
+import study_3
 
-
-print(list(population_scores_mlr.values()))
-print(list(population_scores_rfr.values()))
-print(list(population_scores_gbr.values()))
-
-
-import numpy as np
-import matplotlib.pylab as pl
-import matplotlib.gridspec as gridspec
-
-# Create 2x2 sub plots
-gs = gridspec.GridSpec(2, 2)
-
-pl.figure()
-ax = pl.subplot(gs[0, 0]) # row 0, col 0
-pl.plot([1,2,3,4,5],[population_scores_gbr[0][0],population_scores_gbr[1][0],population_scores_gbr[2][0],population_scores_gbr[3][0], population_scores_gbr[4][0]])
-pl.title('GradientBoostingRegressor', fontsize = 8)
-pl.xlabel('years')
-pl.ylim(0, 3)
-
-ax = pl.subplot(gs[0, 1]) # row 0, col 1
-pl.plot([1,2,3,4,5],[population_scores_rfr[0][0],population_scores_rfr[1][0],population_scores_rfr[2][0],population_scores_rfr[3][0], population_scores_rfr[4][0]])
-pl.title('RandomForestRegressor', fontsize = 8)
-pl.xlabel('years')
-pl.ylim(0, 3)
-
-ax = pl.subplot(gs[1, :]) # row 1, span all columns
-pl.plot([1,2,3,4,5],[population_scores_mlr[0][0],population_scores_mlr[1][0],population_scores_mlr[2][0],population_scores_mlr[3][0], population_scores_mlr[4][0]])
-pl.title('LinearRegression', fontsize = 8)
-pl.xlabel('years')
-pl.ylim(0, 3)
-
-pl.show()
-
-
-show()
-
-
-#
-#
-# import matplotlib.pyplot as plt
-# # Plot MLR MSE
-# plt.plot([1,2,3,4,5],[population_scores_mlr[0][0],population_scores_mlr[1][0],population_scores_mlr[2][0],population_scores_mlr[3][0], population_scores_mlr[4][0]])
-# plt.title('Aggregated MSE for t=5 years')
-# plt.ylim(0, 10)
-# #plt.show()
-# # Plot MLR MAPE
-# #plt.plot([1,2,3,4,5],[population_scores_mlr[0][2],population_scores_mlr[1][2],population_scores_mlr[2][2],population_scores_mlr[3][2], population_scores_mlr[4][2]])
-# plt.show()
-#
-#
-
-#
-#
-# independent_vars, error_t2, Y_t2 = f.generate_vars(parameters, coefficients_y2, independent_vars)
-#
-# # combine dependent and independent variables in a data-frame
-# population_t2 = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y_t2, 'error': error_t2})
-# # Create k samples with n observations using random.sample
-# samples_list_y2 = f.draw_k_samples(parameters, population_t2)
-#
-#
-#
-#
-# independent_vars, error_t3, Y_t3 = f.generate_vars(parameters, coefficients_y3, independent_vars)
-#
-# # combine dependent and independent variables in a data-frame
-# population_t3 = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y_t3, 'error': error_t3})
-# # Create k samples with n observations using random.sample
-# samples_list_y3 = f.draw_k_samples(parameters, population_t3)
-#
-#
-#
-# independent_vars, error_t4, Y_t4 = f.generate_vars(parameters, coefficients_y4, independent_vars)
-#
-# # combine dependent and independent variables in a data-frame
-# population_t4 = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y_t4, 'error': error_t4})
-# # Create k samples with n observations using random.sample
-# samples_list_y4 = f.draw_k_samples(parameters, population_t4)
-#
-#
-#
-# independent_vars, error_t5, Y_t5 = f.generate_vars(parameters, coefficients_y5, independent_vars)
-#
-# # combine dependent and independent variables in a data-frame
-# population_t5 = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y_t5, 'error': error_t5})
-# # Create k samples with n observations using random.sample
-# samples_list_y5 = f.draw_k_samples(parameters, population_t5)
+import study_combined
