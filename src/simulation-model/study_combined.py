@@ -8,7 +8,7 @@ import random
 
 # Import scripts with all functions
 import functions as f
-from main import independent_vars, my_models, parameters
+from main import my_models, parameters
 from train_init_dataset import df, samples_list, scores_mlr, scores_rfr, scores_gbr
 
 #-------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ for t in range (0, parameters[3]):
     prev_year_key = 'year' + str(t+1)
 
     # Generate exogene variables (including latent variables like prediction-error)
-    independent_vars, error, Y = f.generate_vars(parameters, coefficients[t], populations_collection[prev_year_key], year_key)
+    independent_vars, error, Y = f.change_vars_distribution(parameters, coefficients[t], populations_collection[prev_year_key])
 
     # Combine dependent and independent variables in a data-frame
     populations_collection[year_key] = pd.DataFrame({'X1': independent_vars[0], 'X2': independent_vars[1], 'X3': independent_vars[2], 'Y': Y, 'error': error})

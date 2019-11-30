@@ -4,18 +4,17 @@ import random
 from sklearn.preprocessing import scale
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import make_regression
 # Import visualization libraries
 import numpy as np
-import matplotlib.pylab as pl
-import matplotlib.gridspec as gridspec
-from matplotlib.ticker import MaxNLocator
+
 
 # Call np.random.seed() to make examples with (pseudo) random data reproducible:
 np.random.seed(1234)
 
 
 def build_regression_dataset():
-    from sklearn.datasets import make_regression
+    ''' A possible way to generate a random regression problem '''
     # Generate a random regression problem
     X, y = make_regression(n_samples=1000, n_features=3, n_informative=2,
                            n_targets=1, random_state=100, noise=0.05)
@@ -25,21 +24,14 @@ def build_regression_dataset():
 
 #---------------------------------------------------------------------------------------------
 
-# Generate exogene variables (including latent variables like prediction-error)
-def generate_vars(parameters, coefficients, independent_vars, year):
-
-    # np.random.normal draws random numbers from a normal distribution,
-    # the arguments of np.random.normalnorm(mean, sd, number of random numbers)
+def change_vars_distribution(parameters, coefficients, populations_collection):
+    '''np.random.normal draws random numbers from a normal distribution'''
+    # the arguments of np.random.normalnorm(mean, sd, number of random numbers N)
     # the scale function transforms the input values in a range from 0 to 1
     # I used a autoregressive function, meaning that t1 will influence the values on t2, t3 will influence t4 and so on
-    if year == 'year1':
-        X1 = np.random.normal(0.0, 1.0, parameters[0])
-        X2 = np.random.normal(0.0, 1.0, parameters[0])
-        X3 = np.random.normal(0.0, 1.0, parameters[0])
-    else:
-        X1 = scale(independent_vars['X1'] + np.random.normal(0.0, 1.0, parameters[0]))
-        X2 = scale(independent_vars['X2'] + np.random.normal(0.0, 1.0, parameters[0]))
-        X3 = scale(independent_vars['X3'] + np.random.normal(0.0, 1.0, parameters[0]))
+    X1 = scale(populations_collection['X1'] + np.random.normal(0.0, 1.0, parameters[0]))
+    X2 = scale(populations_collection['X2'] + np.random.normal(0.0, 1.0, parameters[0]))
+    X3 = scale(populations_collection['X3'] + np.random.normal(0.0, 1.0, parameters[0]))
 
     error = np.random.normal(0.0, coefficients[4], parameters[0])
 
@@ -49,6 +41,27 @@ def generate_vars(parameters, coefficients, independent_vars, year):
     independent_vars = [X1, X2, X3]
 
     return independent_vars, error, Y
+
+#---------------------------------------------------------------------------------------------
+
+# Generate exogene variables (including latent variables like prediction-error)
+def generate_variables(parameters, coefficients):
+    # seed is used to keep the same X1..Xn variables for each population
+    np.random.seed(42)
+    X1 = np.random.normal(0.0, 1.0, parameters[0])
+    np.random.seed(43)
+    X2 = np.random.normal(0.0, 1.0, parameters[0])
+    np.random.seed(44)
+    X3 = np.random.normal(0.0, 1.0, parameters[0])
+
+    error = np.random.normal(0.0, coefficients[4], parameters[0])
+
+    # calculate endogene variables
+    Y = coefficients[0] + coefficients[1]*X1 + coefficients[2]*X2 + coefficients[3]*X3 + error
+
+    independent_variables = [X1, X2, X3]
+
+    return independent_variables, error, Y
 
 #---------------------------------------------------------------------------------------------
 
@@ -64,7 +77,7 @@ def draw_k_samples(parameters, df):
     return samples_list
 
 #---------------------------------------------------------------------------------------------
-
+# check median aggregation on simulation studies
 def calculate_perform_metrics(y_test, y_pred):
     # Calculate mean squarred error (MSE)
     MSE = metrics.mean_squared_error(y_test, y_pred)
@@ -161,56 +174,12 @@ def fit_gbr(parameters, samples_list, ML_model):
 
 #---------------------------------------------------------------------------------------------
 
-# Creates a Figure that represents MSE score on y-axis and Year on x-y_axis
-def create_plot_MSE(population_scores_mlr, population_scores_rfr, population_scores_gbr, name):
-    # Create 3x1 sub plots
-    gs = gridspec.GridSpec(3, 1)
-    pl.figure(name)
 
-    ax = pl.subplot(gs[0, 0]) # row 0, col 0
-    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    pl.plot([1,2,3,4,5],[population_scores_gbr['year1'][0], population_scores_gbr['year2'][0],population_scores_gbr['year3'][0],population_scores_gbr['year4'][0], population_scores_gbr['year5'][0]])
-    pl.title('GradientBoostingRegressor', fontsize = 12)
-    pl.ylabel('MSE', fontsize = 9)
-    pl.ylim(0, 3)
-
-    ax = pl.subplot(gs[1, 0]) # row 1, col 0
-    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    pl.plot([1,2,3,4,5],[population_scores_rfr['year1'][0],population_scores_rfr['year2'][0],population_scores_rfr['year3'][0],population_scores_rfr['year4'][0], population_scores_rfr['year5'][0]])
-    pl.title('RandomForestRegressor', fontsize = 12)
-    pl.ylabel('MSE', fontsize = 9)
-    pl.ylim(0, 3)
-
-    ax = pl.subplot(gs[2, 0]) # row 2, col 0
-    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    pl.plot([1,2,3,4,5],[population_scores_mlr['year1'][0],population_scores_mlr['year2'][0],population_scores_mlr['year3'][0],population_scores_mlr['year4'][0], population_scores_mlr['year5'][0]])
-    pl.title('LinearRegression', fontsize = 12)
-    pl.ylabel('MSE', fontsize = 9)
-    pl.xlabel('Year')
-    pl.ylim(0, 3)
-
-    pl.tight_layout()
-    pl.show()
-
-#---------------------------------------------------------------------------------------------
-# Creates a Figure of t histograms that represent the distribution of each year of feature X1
-
-def create_histograms(populations_collection, name):
-    gs = gridspec.GridSpec(1, 5)
-    pl.rc('font', size = 6) # font of x and y axes
-    pl.figure(name)
-    
-    for p in range(0,5):
-        year_key = 'year' + str(p+1)
-        population = populations_collection[year_key]
-        ax = pl.subplot(gs[0, p]) # row 0, col 0
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        pl.title('Year'+str(p+1), fontsize = 12)
-        pl.ylabel('Frequency')
-        pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
-    pl.tight_layout() # add space between subplots
-    pl.show()
+#
+# f = plt.figure(figsize=(19, 15))
+# plt.matshow(df.corr(), fignum=f.number)
+# plt.xticks(range(df.shape[1]), df.columns, fontsize=14, rotation=45)
+# plt.yticks(range(df.shape[1]), df.columns, fontsize=14)
+# cb = plt.colorbar()
+# cb.ax.tick_params(labelsize=14)
+# plt.title('Correlation Matrix', fontsize=16);

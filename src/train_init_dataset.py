@@ -5,7 +5,7 @@ from  functions import draw_k_samples, fit_lr, fit_rfr, fit_gbr
 from main import parameters, my_models
 
 
-df = pd.read_csv('data/init_dataset.csv', sep = ",")
+df = pd.read_csv('dataset-generator/data/init_dataset.csv', sep = ",")
 
 # Draw k samples from df
 samples_list = draw_k_samples(parameters, df)
