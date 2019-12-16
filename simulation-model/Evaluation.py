@@ -12,11 +12,6 @@ from sklearn import metrics
 import numpy as np
 import pandas as pd
 
-
-
-#from main import parameters
-#from train_init_dataset import df, samples_list, scores_mlr, scores_rfr, scores_gbr
-
 class Evaluation:
 
     # Define which models are going to be tested
@@ -33,18 +28,18 @@ class Evaluation:
         # Fit all models to the samples of next t years
         for t in range (0, parameters[3]):
 
-            prev_year_key = year_key
-            year_key = year_key + 1
-
             population_scores_mlr[year_key] =  self.fit_lr(parameters, samples_list_collection[year_key], self.mlr)
             population_scores_rfr[year_key] =  self.fit_rfr(parameters, samples_list_collection[year_key], self.rfr)
             population_scores_gbr[year_key] =  self.fit_gbr(parameters, samples_list_collection[year_key], self.gbr)
 
+            year_key = year_key + 1
+
         return  population_scores_mlr, population_scores_rfr, population_scores_gbr
 
     # -------------------------------------------------
-
+    # Fit LinearRegression to all samples of Y1, Y2, ..... Yt
     def fit_lr(self, parameters, samples_list, stat_model):
+
         # Define arrays of accuracy scores
         MSE_mlr   = np.empty(parameters[2])
         MAPE_mlr  = np.empty(parameters[2])
@@ -71,7 +66,6 @@ class Evaluation:
     # -------------------------------------------------
 
     # Fit RandomForestRegressor to all samples of Y1, Y2, ..... Yt
-
     def fit_rfr(self, parameters, samples_list, ML_model):
 
         # Define arrays of accuracy scores
@@ -101,8 +95,8 @@ class Evaluation:
     # -------------------------------------------------
 
     # Fit GradientBoostingRegressor to all samples of Y1, Y2, ..... Yt
-
     def fit_gbr(self, parameters, samples_list, ML_model):
+
         # Define arrays of accuracy scores
         MSE_mlr   = np.empty(parameters[2])
         MAPE_mlr  = np.empty(parameters[2])
@@ -221,3 +215,5 @@ class Evaluation:
             pl.matshow(corrs)
         pl.tight_layout() # add space between subplots
         pl.show()
+
+    # -------------------------------------------------

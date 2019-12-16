@@ -1,13 +1,10 @@
+## This Class contains helping functions for running the simulation
+
 # Import libaries
+from sklearn.preprocessing import scale
 import pandas as pd
 import numpy as np
 import random
-from sklearn.preprocessing import scale
-# Import scripts with all functions
-from functions import change_vars_distribution
-
-#from main import parameters
-#from train_init_dataset import df, samples_list, scores_mlr, scores_rfr, scores_gbr
 
 class SimulationModel:
 
@@ -19,8 +16,8 @@ class SimulationModel:
 
         year_key = init_timestamp
 
-        # Loop simulates future populations for next t years.
-        for t in range (0, parameters[3]):
+        # Loop simulates future populations for next t-1 years.
+        for t in range (0, 4):
 
             prev_year_key = year_key
             year_key = year_key + 1
@@ -63,8 +60,12 @@ class SimulationModel:
 
     # -------------------------------------------------
 
-    # Generate exogene variables (including latent variables like prediction-error)
     def generate_variables(self, parameters, coefficients):
+        """
+            Description: Generates exogene variables (including latent variables like prediction-error)
+            Input: List of parameters, list of coefficients
+            Output: List of X1, X2, X3 values, error, dependent variable Y (target)
+        """
         # seed is used to keep the same X1..Xn variables for each population
         np.random.seed(42)
         X1 = np.random.normal(0.0, 1.0, parameters[0])
@@ -95,10 +96,8 @@ class SimulationModel:
         # Loop creates k samples for each year with n observations in each sample.
         for t in range (0, parameters[3]):
 
-            prev_year_key = year_key
-            year_key = year_key + 1
-
             samples_list_collection[year_key] = self.draw_k_samples(parameters, populations_collection[year_key])
+            year_key = year_key + 1
 
         return samples_list_collection
 
@@ -111,6 +110,7 @@ class SimulationModel:
         """
         # Define a list of k samples with value 0
         samples_list = [[0]]*parameters[2]         # parameters[2] = k
+
         # Create k samples with n observations using random.sample
         for i in range(0, parameters[2]):
             index = random.sample(range(0, parameters[0]), parameters[1])
@@ -118,3 +118,5 @@ class SimulationModel:
             samples_list[i].insert(0, 'sample_n', i)
 
         return samples_list
+
+    # -------------------------------------------------
