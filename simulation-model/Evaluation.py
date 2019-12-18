@@ -26,7 +26,7 @@ class Evaluation:
         year_key = init_timestamp # year 2019
 
         # Fit all models to the samples of next t years
-        for t in range (0, parameters[3]):
+        for t in range (0, parameters['n_years']):
 
             population_scores_mlr[year_key] =  self.fit_lr(parameters, samples_list_collection[year_key], self.mlr)
             population_scores_rfr[year_key] =  self.fit_rfr(parameters, samples_list_collection[year_key], self.rfr)
@@ -41,11 +41,11 @@ class Evaluation:
     def fit_lr(self, parameters, samples_list, stat_model):
 
         # Define arrays of accuracy scores
-        MSE_mlr   = np.empty(parameters[2])
-        MAPE_mlr  = np.empty(parameters[2])
-        sMAPE_mlr = np.empty(parameters[2])
+        MSE_mlr   = np.empty(parameters['n_samples'])
+        MAPE_mlr  = np.empty(parameters['n_samples'])
+        sMAPE_mlr = np.empty(parameters['n_samples'])
 
-        for i in range(0, parameters[2]):
+        for i in range(0, parameters['n_samples']):
             samples_list[i] = pd.DataFrame(samples_list[i], columns = ['X1' , 'X2', 'X3', 'Y'])
             X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
             Y = samples_list[i]['Y']
@@ -69,11 +69,11 @@ class Evaluation:
     def fit_rfr(self, parameters, samples_list, ML_model):
 
         # Define arrays of accuracy scores
-        MSE_mlr   = np.empty(parameters[2])
-        MAPE_mlr  = np.empty(parameters[2])
-        sMAPE_mlr = np.empty(parameters[2])
+        MSE_mlr   = np.empty(parameters['n_samples'])
+        MAPE_mlr  = np.empty(parameters['n_samples'])
+        sMAPE_mlr = np.empty(parameters['n_samples'])
 
-        for i in range(0, parameters[2]):
+        for i in range(0, parameters['n_samples']):
 
             samples_list[i] = pd.DataFrame(samples_list[i], columns = ['X1' , 'X2', 'X3', 'Y'])
             X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
@@ -98,11 +98,11 @@ class Evaluation:
     def fit_gbr(self, parameters, samples_list, ML_model):
 
         # Define arrays of accuracy scores
-        MSE_mlr   = np.empty(parameters[2])
-        MAPE_mlr  = np.empty(parameters[2])
-        sMAPE_mlr = np.empty(parameters[2])
+        MSE_mlr   = np.empty(parameters['n_samples'])
+        MAPE_mlr  = np.empty(parameters['n_samples'])
+        sMAPE_mlr = np.empty(parameters['n_samples'])
 
-        for i in range(0, parameters[2]):
+        for i in range(0, parameters['n_samples']):
             samples_list[i] = pd.DataFrame(samples_list[i], columns = ['X1' , 'X2', 'X3', 'Y'])
             X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
             Y = samples_list[i]['Y']

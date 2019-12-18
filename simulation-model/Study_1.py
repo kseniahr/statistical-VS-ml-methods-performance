@@ -7,9 +7,9 @@ from Evaluation import Evaluation
 
 class Study1():
 
-    def __init__(self, parameters, df):
+    def __init__(self, defaults, df):
 
-        init_timestamp = parameters[4]
+        init_timestamp = defaults['start_year']
 
         # Define regressions coefficients for years 2 to 5 (increase beta1 overtime)
         #-------------------------------------------------------------------------------
@@ -50,13 +50,13 @@ class Study1():
 
         simulation_obj = SimulationModel()
 
-        populations_collection = simulation_obj.simulate_next_populations('study1', init_timestamp, parameters, coefficients, populations_collection)
+        populations_collection = simulation_obj.simulate_next_populations('study1', init_timestamp, defaults, coefficients, populations_collection)
 
-        samples_list_collection = simulation_obj.create_samples_collection(init_timestamp, parameters, populations_collection, samples_list_collection)
+        samples_list_collection = simulation_obj.create_samples_collection(init_timestamp, defaults, populations_collection, samples_list_collection)
 
         eval_obj = Evaluation()
 
-        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(init_timestamp, parameters, population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
+        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(init_timestamp, defaults, population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
         # Now we create histograms that visualize the distribution of feature X1 overtime:
         eval_obj.create_histograms(init_timestamp, populations_collection, 'Study 1: distribution of X1')

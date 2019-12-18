@@ -6,9 +6,9 @@ from Evaluation import Evaluation
 
 class Study3():
 
-    def __init__(self, parameters, df):
+    def __init__(self, defaults, df):
 
-        init_timestamp = parameters[4]
+        init_timestamp = defaults['start_year']
 
         # Define regressions coefficients for years 2 to 5
         beta0_y2                     = 0.2
@@ -50,13 +50,13 @@ class Study3():
 
         simulation_obj = SimulationModel()
 
-        populations_collection = simulation_obj.simulate_next_populations('study3', init_timestamp, parameters, coefficients, populations_collection)
+        populations_collection = simulation_obj.simulate_next_populations('study3', init_timestamp, defaults, coefficients, populations_collection)
 
-        samples_list_collection = simulation_obj.create_samples_collection(init_timestamp, parameters, populations_collection, samples_list_collection)
+        samples_list_collection = simulation_obj.create_samples_collection(init_timestamp, defaults, populations_collection, samples_list_collection)
 
         eval_obj = Evaluation()
 
-        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(init_timestamp, parameters, population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
+        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(init_timestamp, defaults, population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(init_timestamp, population_scores_mlr, population_scores_rfr, population_scores_gbr, 'Study 3: MSE overtime')
