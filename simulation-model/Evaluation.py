@@ -52,7 +52,7 @@ class Evaluation:
 
         for i in range(0, defaults['n_samples']):
 
-            X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
+            X = samples_list[i].drop(['Y', 'error'], axis = 1) # here we have 3 variables for multiple regression.
             Y = samples_list[i]['Y']
 
             X_train, X_test, y_train, y_test = train_test_split(X, Y, \
@@ -174,7 +174,7 @@ class Evaluation:
         sMAPE_rfr = np.empty(defaults['n_samples'])
 
         for i in range(0, defaults['n_samples']):
-            X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
+            X = samples_list[i].drop(['Y', 'error'], axis = 1) # here we have 3 variables for multiple regression.
             Y = samples_list[i]['Y']
 
             X_train, X_test, y_train, y_test = train_test_split(X, Y, \
@@ -203,7 +203,7 @@ class Evaluation:
         sMAPE_gbr = np.empty(defaults['n_samples'])
 
         for i in range(0, defaults['n_samples']):
-            X = samples_list[i].drop('Y', axis = 1) # here we have 3 variables for multiple regression.
+            X = samples_list[i].drop(['Y', 'error'], axis = 1) # here we have 3 variables for multiple regression.
             Y = samples_list[i]['Y']
 
             X_train, X_test, y_train, y_test = train_test_split(X, Y, \

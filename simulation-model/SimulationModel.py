@@ -25,20 +25,20 @@ class SimulationModel:
             year_key = year_key + 1
 
             # Generate exogene variables (including latent variables like prediction-error)
-            if study_name == 'study1' or study_name == 'study_combined':
+            if study_name == 'study1' or study_name == 'study4':
 
-                independent_vars, Y = self.change_vars_distribution(defaults, \
+                independent_vars, error, Y = self.change_vars_distribution(defaults, \
                  coefficients[year_key], populations_collection[prev_year_key])
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([pd.DataFrame(independent_vars), \
-                 pd.DataFrame({'Y' : Y})], axis=1)
+                 pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
 
             else:
-                independent_vars, Y = self.generate_variables(defaults, \
+                independent_vars, error, Y = self.generate_variables(defaults, \
                  coefficients[year_key], populations_collection[prev_year_key])
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([independent_vars, \
-                 pd.DataFrame({'Y' : Y})], axis=1)
+                 pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
 
 
         return populations_collection
@@ -66,12 +66,13 @@ class SimulationModel:
             independent_vars[X] = scale(populations_collection[X] + \
              np.random.normal(0.0, 1.0, defaults['n_rows']))
 
-        # Assign normally distributed values to be an error
+        # Assign normally distributed values to be an error (same error overtime)
+        random.seed(42)
         error = np.random.normal(0.0, coefficients['error'], defaults['n_rows'])
 
         Y = self.calculate_dependent_var(defaults, coefficients, independent_vars, error)
 
-        return independent_vars, Y
+        return independent_vars, error, Y
 
     # -------------------------------------------------
 
@@ -102,6 +103,7 @@ class SimulationModel:
             Input: List of defaults, list of coefficients
             Output: List of X1, X2, X3 values, error, dependent variable Y (target)
         """
+        independent_vars = {}
 
         # Keep the same values for X1, X2, ..., Xb like in the initial population
         filter_col = [col for col in populations_collection if col.startswith('X')]
@@ -110,9 +112,9 @@ class SimulationModel:
 
         error = populations_collection['error']
 
-        Y = self.generate_variables(self, coefficients[year_key], independent_vars, error)
+        Y = self.calculate_dependent_var(defaults, coefficients, independent_vars, error)
 
-        return independent_variables, Y
+        return independent_vars, error, Y
 
     # -------------------------------------------------
 

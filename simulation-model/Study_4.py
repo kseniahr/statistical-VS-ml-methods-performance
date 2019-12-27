@@ -3,60 +3,87 @@
 # Import objects
 from SimulationModel import SimulationModel
 from Evaluation import Evaluation
+import copy
 
-class Study4():
+class Study_4():
 
-    def __init__(self, defaults, df):
+    def __init__(self, defaults, coefficients, df, beta_change, relationship_term, mean_change):
 
-        init_timestamp = defaults['start_year']
+        """
+        Description: This method is called when an object is created from a
+        class and it allows the class to initialize the attributes of the class
+        Input: List of defaults, dataframe
+        """
+        self.defaults = defaults
+        self.coefficients = coefficients
+        self.df = df
+        self.beta_change = beta_change
+        self.relationship_term = relationship_term
+        self.mean_change = mean_change
 
-        # Define regressions coefficients for years 2 to 5
-        #-------------------------------------------------------------------------------
-        intercept_y2                 = 0.2
-        beta1_y2, beta2_y2, beta3_y2 = 1.3, 1.2, 1.7
-        error_sd_y2                  = 1
-        coefficients_y2 = [intercept_y2, beta1_y2, beta2_y2, beta3_y2, error_sd_y2]
-        #-------------------------------
-        intercept_y3                 = 0.8
-        beta1_y3, beta2_y3, beta3_y3 = 1.9, 1.4, 1.1
-        error_sd_y3                  = 1
-        coefficients_y3 = [intercept_y3, beta1_y3, beta2_y3, beta3_y3, error_sd_y3]
-        #-------------------------------
-        intercept_y4                 = 1.4
-        beta1_y4, beta2_y4, beta3_y4 = 2.5, 1.6, 0.5
-        error_sd_y4                  = 1
-        coefficients_y4 = [intercept_y4, beta1_y4, beta2_y4, beta3_y4, error_sd_y4]
-        #-------------------------------
-        intercept_y5                 = 2
-        beta1_y5, beta2_y5, beta3_y5 = 4, 1.8, -1
-        error_sd_y5                  = 1
-        coefficients_y5 = [intercept_y5, beta1_y5, beta2_y5, beta3_y5, error_sd_y5]
+    def create_concept_drift(self):
+        """
+        Description: This method introduces unknown factor increase of target mean
+        Input: none
+        Output: Dictionary of coefficients for each year in the simulation
+        """
 
-        #-------------------------------------------------------------------------------
+        year = self.defaults['start_year'] + 1
 
-        # Initialize a list of coefficients for each year
-        coefficients = [coefficients_y2, coefficients_y3, coefficients_y4, coefficients_y5]
+        for i in range(self.defaults['n_years']-1):
 
+            dict = self.coefficients[year-1]
+
+            item_copy = copy.copy(dict)
+
+            item_copy.update({'beta1': dict['beta1'] * self.beta_change})
+
+            item_copy.update({'intercept': dict['intercept'] + self.mean_change, \
+             'beta1': dict['beta1'] - self.relationship_term, \
+              'beta3': dict['beta3'] + self.relationship_term \
+               })
+
+            self.coefficients.update({year: item_copy})
+
+            year = year + 1
+
+        return self.coefficients
+
+    #-------------------------------------------------
+
+    def run_simulation(self):
+        """
+        Description: This method evaluates model performance when
+        concept drift is introduced
+        Input: none
+        Output: Plots of MSE evolution overtime
+        """
         # Initialize empty dictionaries of accuracy metrics
         population_scores_mlr = {}
         population_scores_rfr = {}
         population_scores_gbr = {}
 
+        self.coefficients = self.create_concept_drift()
+
         # Initialize a collection of year1 population as a dictionaty
-        populations_collection = {init_timestamp : df}
+        populations_collection = {self.defaults['start_year'] : self.df}
 
         # Initialize an empty collection of samples
         samples_list_collection = {}
 
         simulation_obj = SimulationModel()
 
-        populations_collection = simulation_obj.simulate_next_populations('study4', init_timestamp, defaults, coefficients, populations_collection)
+        populations_collection = simulation_obj.simulate_next_populations('study4', \
+         self.defaults, self.coefficients, populations_collection)
 
-        samples_list_collection = simulation_obj.create_samples_collection(init_timestamp, defaults, populations_collection, samples_list_collection)
+        samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
+         populations_collection, samples_list_collection)
 
         eval_obj = Evaluation()
 
-        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(init_timestamp, defaults, population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
+        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
+         population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
-        eval_obj.create_plot_MSE(init_timestamp, population_scores_mlr, population_scores_rfr, population_scores_gbr, 'Study 4: Concept Drift')
+        eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
+         population_scores_gbr, 'Study 4 concept drift: MSE overtime')

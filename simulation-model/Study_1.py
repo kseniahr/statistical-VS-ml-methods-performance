@@ -3,6 +3,7 @@
 # Import objects
 from SimulationModel import SimulationModel
 from Evaluation import Evaluation
+import copy
 
 class Study_1():
 
@@ -26,11 +27,8 @@ class Study_1():
         Input: none
         Output: Dictionary of coefficients for each year in the simulation
         """
-        import copy
 
         year = self.defaults['start_year'] + 1
-
-        print(self.coefficients)
 
         for i in range(self.defaults['n_years']-1):
 
@@ -69,7 +67,6 @@ class Study_1():
 
         simulation_obj = SimulationModel()
 
-
         populations_collection = simulation_obj.simulate_next_populations('study1', \
          self.defaults, self.coefficients, populations_collection)
 
@@ -81,10 +78,9 @@ class Study_1():
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
-
-        # # Now we create histograms that visualize the distribution of feature X1 changing overtime:
+        # Now we create histograms that visualize the distribution of feature X1 changing overtime:
         eval_obj.create_histograms(self.defaults, populations_collection, 'Study 1: distribution of X1')
-        #
-        # # Now we create plots that visualize MSE of each model for a timespan of t years
+
+        # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Study 1: MSE overtime')

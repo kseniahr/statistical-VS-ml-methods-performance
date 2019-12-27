@@ -4,6 +4,7 @@
 import sys
 import numpy as np
 import pandas as pd
+import random
 
 class GeneratePopulation():
 
@@ -59,6 +60,7 @@ class GeneratePopulation():
             independent_vars[X] = np.random.normal(0.0, 1.0, self.defaults['n_rows'])
 
         # Assign normally distributed values to be an error
+        random.seed(42)
         error = np.random.normal(0.0, coefficients_y1['error'], self.defaults['n_rows'])
 
         Y = self.calculate_dependent_var_linear(coefficients_y1, independent_vars, error)
