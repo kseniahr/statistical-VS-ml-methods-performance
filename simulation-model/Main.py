@@ -14,38 +14,51 @@ n = 100  # Observations in each sample
 k = 10   # Number of samples
 t = 10    # Number of years
 y = 2019 # Starting year
-b = 5   # Number of predictor variables (min = 3)
+b = 3   # Number of predictor variables (min = 3)
 
-beta_change_study1 = 1.2 # Strength of beta coefficient increase
+
+beta_change_study1 = 1.4 # Strength of beta coefficient increase
 relationship_term_study2 = 0.1
-target_mean_study3 = 0.8
+target_mean_study3 = 10
 
 defaults = {'n_rows': N, 'n_rows_sample': n, 'n_samples': k, 'n_years': t, \
  'start_year': y, 'n_X': b}
 
-# # Calling object GeneratePopulation() will create a dataset for year 2019 and save it in a folder 'data'
-obj = GeneratePopulation(defaults)
-#
-coefficients_y1 = obj.generate_population()
+# Identify linear or non-linear function based on user input
+complexity = input("Choose which regression function to test (linear or polynomial): ")
 
-# Import dataset A
-simple_dataset = pd.read_csv('data/init_population_A.csv', sep = ",")
+# Calling object GeneratePopulation() will create a dataset for year 2019 and save it in a folder 'data'
+obj = GeneratePopulation(defaults)
+
+# Get the coefficients from a generated population
+coefficients_y1 = obj.generate_population(complexity)
+
+# Import dataset
+dataset = pd.read_csv('data/init_population_' + complexity + '.csv', sep = ",")
+
+# Initialize a dictionary where key is a year and value is a dictionary of coefficients
 coefficients = {defaults['start_year']: coefficients_y1}
 
-# Import complex dataset B
-#complex_dataset = pd.read_csv('data/init_population_B.csv', sep = ",")
 
 # # Compute mean of the population
 # print(simple_dataset.mean())
 
-#Run each simulation study
-study1 = Study_1(defaults, coefficients, simple_dataset, beta_change_study1)
-study1.run_simulation()
-#
-# study2 = Study_2(defaults, coefficients, simple_dataset, relationship_term_study2)
-# study2.run_simulation()
-# study3 = Study_3(defaults, coefficients, simple_dataset, target_mean_study3)
-# study3.run_simulation()
-# study4 = Study_4(defaults, coefficients, simple_dataset, beta_change_study1, \
-#  relationship_term_study2, target_mean_study3)
-# study4.run_simulation()
+study = input("Choose which study to run (study1, study2, study3 or study4): ")
+
+# Run study based on user input
+if study == 'study1':
+    study1 = Study_1(defaults, coefficients, dataset, beta_change_study1, complexity)
+    study1.run_simulation()
+elif study == 'study2':
+    study2 = Study_2(defaults, coefficients, dataset, relationship_term_study2, complexity)
+    study2.run_simulation()
+elif study == 'study3':
+    study3 = Study_3(defaults, coefficients, dataset, target_mean_study3, complexity)
+    study3.run_simulation()
+elif study == 'study4':
+    study4 = Study_4(defaults, coefficients, dataset, beta_change_study1, \
+                     relationship_term_study2, target_mean_study3, complexity)
+    study4.run_simulation()
+else: 
+    print('This study does not exist. Please select an existing study')    
+    

@@ -7,7 +7,7 @@ import copy
 
 class Study_4():
 
-    def __init__(self, defaults, coefficients, df, beta_change, relationship_term, mean_change):
+    def __init__(self, defaults, coefficients, df, beta_change, relationship_term, mean_change, complexity):
 
         """
         Description: This method is called when an object is created from a
@@ -20,6 +20,7 @@ class Study_4():
         self.beta_change = beta_change
         self.relationship_term = relationship_term
         self.mean_change = mean_change
+        self.complexity = complexity
 
     def create_concept_drift(self):
         """
@@ -38,7 +39,7 @@ class Study_4():
 
             item_copy.update({'beta1': dict['beta1'] * self.beta_change})
 
-            item_copy.update({'intercept': dict['intercept'] + self.mean_change, \
+            item_copy.update({'intercept': (dict['intercept'] + 1) * self.mean_change, \
              'beta1': dict['beta1'] - self.relationship_term, \
               'beta3': dict['beta3'] + self.relationship_term \
                })
@@ -46,9 +47,8 @@ class Study_4():
             self.coefficients.update({year: item_copy})
 
             year = year + 1
-
+         
         return self.coefficients
-
     #-------------------------------------------------
 
     def run_simulation(self):
@@ -74,7 +74,7 @@ class Study_4():
         simulation_obj = SimulationModel()
 
         populations_collection = simulation_obj.simulate_next_populations('study4', \
-         self.defaults, self.coefficients, populations_collection)
+         self.defaults, self.coefficients, populations_collection, self.complexity)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
          populations_collection, samples_list_collection)
@@ -87,3 +87,7 @@ class Study_4():
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Study 4 concept drift: MSE overtime')
+        
+        print('Simulation of Concept Drift, including Linear Regression, \
+        Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \
+        generated observations for each of ' + str(self.defaults['n_years']) + ' years is finished.')

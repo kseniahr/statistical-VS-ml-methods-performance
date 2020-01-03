@@ -286,34 +286,60 @@ class Evaluation:
         pl.xlim(0, len(list_x_axis))
         pl.ylim(0, 15)
 
-
-
         pl.tight_layout()
-        pl.show()
+        pl.savefig('plots/MSE_'+name+'.png')
 
     # -------------------------------------------------
 
     # Creates a Figure of t histograms that represent the distribution of each year of feature X1
     def create_histograms(self, defaults, populations_collection, name):
-        gs = gridspec.GridSpec(1, defaults['n_years'])
-        pl.rc('font', size = 6) # font of x and y axes
-        pl.figure(name)
+        if defaults['n_years']<=5:
+            gs = gridspec.GridSpec(1, defaults['n_years'])
+            pl.rc('font', size = 6) # font of x and y axes
+            pl.figure(name)
 
-        year_key = defaults['start_year']
+            year_key = defaults['start_year']
 
-        for p in range(0,defaults['n_years']):
+            for p in range(0,defaults['n_years']):
 
-            population = populations_collection[year_key]
-            year_key = year_key + 1
-            ax = pl.subplot(gs[0, p]) # row 0, col 0
-            ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-            pl.title('Year'+str(p+1), fontsize = 12)
-            pl.ylabel('Frequency')
-            pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
+                population = populations_collection[year_key]
+                year_key = year_key + 1
+                ax = pl.subplot(gs[0, p]) # row 0, col 0
+                ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+                ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+                pl.title('Year'+str(p+1), fontsize = 12)
+                pl.ylabel('Frequency')
+                pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
+
+        else:
+            gs = gridspec.GridSpec(2, int(defaults['n_years']/2))
+            pl.rc('font', size = 6) # font of x and y axes
+            pl.figure(name)
+
+            year_key = defaults['start_year']
+
+            for p in range(0, defaults['n_years']):
+                if p < 5:
+                    population = populations_collection[year_key]
+                    year_key = year_key + 1
+                    ax = pl.subplot(gs[0, p]) # row 0, col 0
+                    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+                    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+                    pl.title('Year'+str(p+1), fontsize = 12)
+                    pl.ylabel('Frequency')
+                    pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
+                else:
+                    population = populations_collection[year_key]
+                    year_key = year_key + 1
+                    ax = pl.subplot(gs[1, p-int(defaults['n_years']/2)]) # row 0, col 0
+                    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+                    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+                    pl.title('Year'+str(p+1), fontsize = 12)
+                    pl.ylabel('Frequency')
+                    pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
+
         pl.tight_layout() # add space between subplots
-        pl.show()
-
+        pl.savefig('plots/Histograms_' + name + '.png')
     # -------------------------------------------------
 
     # Creates a Figure of t heatmaps that represent the correlation between features
@@ -334,6 +360,6 @@ class Evaluation:
             pl.ylabel('Frequency')
             pl.matshow(corrs)
         pl.tight_layout() # add space between subplots
-        pl.show()
+        pl.savefig('plots/Correlation_' + name + '.png')
 
     # -------------------------------------------------

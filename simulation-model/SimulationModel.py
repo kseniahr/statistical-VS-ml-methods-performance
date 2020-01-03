@@ -9,7 +9,7 @@ import random
 class SimulationModel:
 
     def simulate_next_populations(self, study_name, defaults, coefficients, \
-     populations_collection):
+     populations_collection, complexity):
         """
             Input: List of defaults, year of population t1,  list of coefficients,
             dictionary of populations, dictionary of samples from each population
@@ -28,14 +28,14 @@ class SimulationModel:
             if study_name == 'study1' or study_name == 'study4':
 
                 independent_vars, error, Y = self.change_vars_distribution(defaults, \
-                 coefficients[year_key], populations_collection[prev_year_key])
+                 coefficients[year_key], populations_collection[prev_year_key], complexity)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([pd.DataFrame(independent_vars), \
                  pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
 
             else:
                 independent_vars, error, Y = self.generate_variables(defaults, \
-                 coefficients[year_key], populations_collection[prev_year_key])
+                 coefficients[year_key], populations_collection[prev_year_key], complexity)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([independent_vars, \
                  pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
@@ -45,7 +45,7 @@ class SimulationModel:
 
     # -------------------------------------------------
 
-    def change_vars_distribution(self, defaults, coefficients, populations_collection):
+    def change_vars_distribution(self, defaults, coefficients, populations_collection, complexity):
         """
             Input: List of defaults, list of coefficients, dictionary of
             populations
@@ -70,13 +70,18 @@ class SimulationModel:
         random.seed(42)
         error = np.random.normal(0.0, coefficients['error'], defaults['n_rows'])
 
-        Y = self.calculate_dependent_var(defaults, coefficients, independent_vars, error)
+        if complexity == 'linear':
+            Y = self.calculate_dependent_var_linear(defaults, coefficients, independent_vars, error)
+        elif complexity == 'polynomial':
+            Y = self.calculate_dependent_var_polynomial(defaults, coefficients, independent_vars, error)
+        else:
+            print('This type of complexity does not exist.')
 
         return independent_vars, error, Y
 
     # -------------------------------------------------
 
-    def calculate_dependent_var(self, defaults, coefficients, independent_vars, error):
+    def calculate_dependent_var_linear(self, defaults, coefficients, independent_vars, error):
         """
             Description: Calculate dependent variable Y (based on intercept coef,
             beta coef, independent variables and prediction error)
@@ -84,19 +89,41 @@ class SimulationModel:
             variables (X1, X2,..., Xb) and prediction error
             Output: values of dependent variable Y
         """
-        Y = coefficients['intercept'] + error
+        Y_linear = coefficients['intercept'] + error
 
-        for i in range(defaults['n_X']):
-            beta_i = "beta" + str(i+1)
-            X_i = 'X'+ str(i+1)
+        for j in range(defaults['n_X']):
 
-            Y = Y + coefficients[beta_i]*independent_vars[X_i]
+            beta_i = "beta" + str(j+1)
+            X_i = 'X'+ str(j+1)
 
-        return Y
+            Y_linear = Y_linear + coefficients[beta_i]*independent_vars[X_i]
+
+        return Y_linear
+    
+    # -------------------------------------------------
+
+    def calculate_dependent_var_polynomial(self, defaults, coefficients, independent_vars, error):
+        """
+            Description: Calculate dependent variable Y as a non-linear polynomial
+            function (based on intercept coef, beta coef, independent variables and prediction error)
+            Input: List of defaults, dict of coefficients, dict of independent
+            variables s(X1, X2,..., Xb) and prediction error
+            Output: values of dependent variable Y
+        """
+        Y_polynom = coefficients['intercept'] + error
+
+        for j in range(defaults['n_X']):
+
+            beta_i = "beta" + str(j+1)
+            X_i = 'X'+ str(j+1)
+
+            Y_polynom = Y_polynom + coefficients[beta_i] * independent_vars[X_i]
+
+        return Y_polynom
 
     # -------------------------------------------------
 
-    def generate_variables(self, defaults, coefficients, populations_collection):
+    def generate_variables(self, defaults, coefficients, populations_collection, complexity):
         """
             Description: Generates exogene variables (including latent variables
             like prediction-error)
@@ -112,7 +139,12 @@ class SimulationModel:
 
         error = populations_collection['error']
 
-        Y = self.calculate_dependent_var(defaults, coefficients, independent_vars, error)
+        if complexity == 'linear':
+            Y = self.calculate_dependent_var_linear(coefficients, independent_vars, error)
+        elif complexity == 'polynomial':
+            Y = self.calculate_dependent_var_polynomial(coefficients, independent_vars, error)
+        else:
+            print('This type of complexity does not exist.')
 
         return independent_vars, error, Y
 

@@ -42,7 +42,7 @@ class GeneratePopulation():
 
     #-------------------------------------------------
 
-    def generate_population(self):
+    def generate_population(self, complexity):
         """
             Description: Artificially generated dataset saved into folder 'data'
             Input: none
@@ -63,14 +63,20 @@ class GeneratePopulation():
         random.seed(42)
         error = np.random.normal(0.0, coefficients_y1['error'], self.defaults['n_rows'])
 
-        Y = self.calculate_dependent_var_linear(coefficients_y1, independent_vars, error)
+        if complexity == 'linear':
+            Y = self.calculate_dependent_var_linear(coefficients_y1, independent_vars, error)
+        elif complexity == 'polynomial':
+            Y = self.calculate_dependent_var_polynomial(coefficients_y1, independent_vars, error)
+        else:
+            print('This type of complexity does not exist.')
 
         # Combine dependent and independent variables in a data-frame
         population = pd.concat([pd.DataFrame(independent_vars), \
                         pd.DataFrame({'error': error, 'Y' : Y})], axis=1)
 
+
         # Export initial dataset for running the simulation
-        population.to_csv('data/init_population_A.csv', index = None, header=True)
+        population.to_csv('data/init_population_' + complexity + '.csv', index = None, header=True)
 
         return coefficients_y1
 
@@ -85,41 +91,35 @@ class GeneratePopulation():
             variables (X1, X2,..., Xb) and prediction error
             Output: values of dependent variable Y
         """
-        Y = coefficients['intercept'] + error
+        Y_linear = coefficients['intercept'] + error
 
-        for i in range(self.defaults['n_X']):
-            beta_i = "beta" + str(i+1)
-            X_i = 'X'+ str(i+1)
+        for j in range(self.defaults['n_X']):
 
-            Y = Y + coefficients[beta_i]*independent_vars[X_i]
+            beta_i = "beta" + str(j+1)
+            X_i = 'X'+ str(j+1)
 
-        return Y
+            Y_linear = Y_linear + coefficients[beta_i]*independent_vars[X_i]
+
+        return Y_linear
 
     # -------------------------------------------------
 
-    def calculate_dependent_var_complex(self, coefficients, independent_vars, error):
+    def calculate_dependent_var_polynomial(self, coefficients, independent_vars, error):
         """
             Description: Calculate dependent variable Y as a linear combination(based
             on intercept coef, beta coef,
             independent variables and prediction error)
             Input: List of defaults, dict of coefficients, dict of independent
-            variables (X1, X2,..., Xb) and prediction error
+            variables s(X1, X2,..., Xb) and prediction error
             Output: values of dependent variable Y
         """
-        Y = coefficients['intercept'] + error
+        Y_polynom = coefficients['intercept'] + error
 
-  #       Y<-1+
-  # 2*X1+
-  # 0.5*X1^2+
-  # 10*sin(X2)^3+
-  # 2*X2+
-  # 0.5*X1*X2+
-  # error
+        for j in range(self.defaults['n_X']):
 
-        for i in range(self.defaults['n_X']):
-            beta_i = "beta" + str(i+1)
-            X_i = 'X'+ str(i+1)
+            beta_i = "beta" + str(j+1)
+            X_i = 'X'+ str(j+1)
 
-            Y = Y + coefficients[beta_i]*independent_vars[X_i]
+            Y_polynom = Y_polynom + coefficients[beta_i] * independent_vars[X_i]
 
-        return Y
+        return Y_polynom
