@@ -30,10 +30,10 @@ Open simulation-model/Main.py with a text editor (I am using Atom.io) and define
 ```
 # Define data generation settings:
 
-N = 1000  # Observations in the population
+N = 100000  # Observations in the population
 b = 3     # Number of predictor variables
-k = 10    # Number of samples
-n = 100   # Observations in each sample
+k = 100    # Number of samples
+n = 1000   # Observations in each sample
 y = 2019  # Starting year
 t = 10    # Number of years
 ```
