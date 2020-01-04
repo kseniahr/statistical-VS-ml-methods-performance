@@ -7,7 +7,7 @@ import copy
 
 class Study_1():
 
-    def __init__(self, defaults, coefficients, df, beta_change, complexity):
+    def __init__(self, defaults, coefficients, df, beta_change, complexity, var_type):
         """
         Description: This method is called when an object is created from a
         class and it allows the class to initialize the attributes of the class
@@ -18,6 +18,7 @@ class Study_1():
         self.df = df
         self.beta_change = beta_change
         self.complexity = complexity
+        self.var_type = var_type
 
     #-------------------------------------------------
 
@@ -69,7 +70,7 @@ class Study_1():
         simulation_obj = SimulationModel()
 
         populations_collection = simulation_obj.simulate_next_populations('study1', \
-         self.defaults, self.coefficients, populations_collection, self.complexity)
+         self.defaults, self.coefficients, populations_collection, self.complexity, self.var_type)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
          populations_collection, samples_list_collection)
@@ -84,8 +85,8 @@ class Study_1():
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
-         population_scores_gbr, 'Study 1: MSE overtime') 
-        
+         population_scores_gbr, 'Study 1: MSE overtime')
+
         print('Simulation of distribution change of input variables, including Linear Regression, \
         Random Forest Regression and Gradient Boosting Regression on % 2d artificially \
         generated observations for each of % 2d years is finished.' %(self.defaults['n_rows'], \

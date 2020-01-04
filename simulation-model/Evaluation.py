@@ -288,6 +288,7 @@ class Evaluation:
 
         pl.tight_layout()
         pl.savefig('plots/MSE_'+name+'.png')
+        pl.show()
 
     # -------------------------------------------------
 
@@ -340,6 +341,7 @@ class Evaluation:
 
         pl.tight_layout() # add space between subplots
         pl.savefig('plots/Histograms_' + name + '.png')
+        pl.show()
     # -------------------------------------------------
 
     # Creates a Figure of t heatmaps that represent the correlation between features

@@ -42,7 +42,7 @@ class GeneratePopulation():
 
     #-------------------------------------------------
 
-    def generate_population(self, complexity):
+    def generate_population(self, complexity, var_type):
         """
             Description: Artificially generated dataset saved into folder 'data'
             Input: none
@@ -54,10 +54,28 @@ class GeneratePopulation():
         # Create empty dictionary of b independent variables (X1, X2, ..., Xb)
         independent_vars = {}
 
-        # This for-loop creates normally distributed values for X1, X2, ..., Xb
-        for i in range(self.defaults['n_X']):
-            X = 'X'+ str(i+1)
-            independent_vars[X] = np.random.normal(0.0, 1.0, self.defaults['n_rows'])
+        if var_type == 'continuous':
+            # This for-loop creates normally distributed continuous values for X1, X2, ..., Xb
+            for i in range(self.defaults['n_X']):
+                X = 'X'+ str(i+1)
+                independent_vars[X] = np.random.normal(0.0, 1.0, self.defaults['n_rows'])
+
+        elif var_type == 'hybrid':
+            # This for-loop creates normally distributed values for X1, X2, ..., Xb where
+            #  some vars are binary and some are continuous
+
+                for i in range(0, int(self.defaults['n_X']/2)):
+                    X = 'X'+ str(i+1)
+                    independent_vars[X] = np.random.normal(0.0, 1.0, self.defaults['n_rows'])
+
+
+                for i in range(int(self.defaults['n_X']/2), self.defaults['n_X']):
+                    X = 'X'+ str(i+1)
+                    independent_vars[X] = np.random.choice(a = [0, 1], size = (self.defaults['n_rows'],))
+
+
+        else:
+            print('This variable type is not included in the simulatiom model.')
 
         # Assign normally distributed values to be an error
         random.seed(42)

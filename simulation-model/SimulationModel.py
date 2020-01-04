@@ -9,13 +9,12 @@ import random
 class SimulationModel:
 
     def simulate_next_populations(self, study_name, defaults, coefficients, \
-     populations_collection, complexity):
+     populations_collection, complexity, var_type):
         """
             Input: List of defaults, year of population t1,  list of coefficients,
             dictionary of populations, dictionary of samples from each population
             Output: Dictionary of t populations
         """
-
         year_key = defaults['start_year']
 
         # Loop simulates future populations for next t-1 years.
@@ -28,7 +27,7 @@ class SimulationModel:
             if study_name == 'study1' or study_name == 'study4':
 
                 independent_vars, error, Y = self.change_vars_distribution(defaults, \
-                 coefficients[year_key], populations_collection[prev_year_key], complexity)
+                 coefficients[year_key], populations_collection[prev_year_key], complexity, var_type)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([pd.DataFrame(independent_vars), \
                  pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
@@ -40,12 +39,11 @@ class SimulationModel:
                 populations_collection[year_key] = pd.concat([independent_vars, \
                  pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
 
-
         return populations_collection
 
     # -------------------------------------------------
 
-    def change_vars_distribution(self, defaults, coefficients, populations_collection, complexity):
+    def change_vars_distribution(self, defaults, coefficients, populations_collection, complexity, var_type):
         """
             Input: List of defaults, list of coefficients, dictionary of
             populations
@@ -60,11 +58,27 @@ class SimulationModel:
         # Create empty dictionary of b independent variables (X1, X2, ..., Xb)
         independent_vars = {}
 
-        for i in range(defaults['n_X']):
+        if var_type == 'continuous':
+            # This for-loop scales normally distributed continuous values for X1, X2, ..., Xb
+            for i in range(defaults['n_X']):
+                X = 'X'+ str(i+1)
+                independent_vars[X] = scale(populations_collection[X] + \
+                 np.random.normal(0.0, 1.0, defaults['n_rows']))
 
-            X = 'X'+ str(i+1)
-            independent_vars[X] = scale(populations_collection[X] + \
-             np.random.normal(0.0, 1.0, defaults['n_rows']))
+        elif var_type == 'hybrid':
+            # This for-loop creates normally distributed values for X1, X2, ..., Xb where
+            #  some vars are binary and some are continuous
+            for i in range(0, int(defaults['n_X']/2)):
+                X = 'X'+ str(i+1)
+                independent_vars[X] = scale(populations_collection[X] + \
+                 np.random.normal(0.0, 1.0, defaults['n_rows']))
+
+            for i in range(int(defaults['n_X']/2), defaults['n_X']):
+                X = 'X'+ str(i+1)
+                independent_vars[X] = np.random.choice(a = [0, 1], size = (defaults['n_rows'],))
+
+        else:
+            print('This variable type is not included in the simulatiom model.')
 
         # Assign normally distributed values to be an error (same error overtime)
         random.seed(42)
@@ -72,8 +86,10 @@ class SimulationModel:
 
         if complexity == 'linear':
             Y = self.calculate_dependent_var_linear(defaults, coefficients, independent_vars, error)
+
         elif complexity == 'polynomial':
             Y = self.calculate_dependent_var_polynomial(defaults, coefficients, independent_vars, error)
+
         else:
             print('This type of complexity does not exist.')
 
@@ -99,7 +115,7 @@ class SimulationModel:
             Y_linear = Y_linear + coefficients[beta_i]*independent_vars[X_i]
 
         return Y_linear
-    
+
     # -------------------------------------------------
 
     def calculate_dependent_var_polynomial(self, defaults, coefficients, independent_vars, error):
@@ -140,9 +156,9 @@ class SimulationModel:
         error = populations_collection['error']
 
         if complexity == 'linear':
-            Y = self.calculate_dependent_var_linear(coefficients, independent_vars, error)
+            Y = self.calculate_dependent_var_linear(defaults, coefficients, independent_vars, error)
         elif complexity == 'polynomial':
-            Y = self.calculate_dependent_var_polynomial(coefficients, independent_vars, error)
+            Y = self.calculate_dependent_var_polynomial(defaults, coefficients, independent_vars, error)
         else:
             print('This type of complexity does not exist.')
 
