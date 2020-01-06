@@ -9,7 +9,7 @@ import random
 class SimulationModel:
 
     def simulate_next_populations(self, study_name, defaults, coefficients, \
-     populations_collection, complexity, var_type):
+     populations_collection, dimensionality, complexity, var_type):
         """
             Input: List of defaults, year of population t1,  list of coefficients,
             dictionary of populations, dictionary of samples from each population
@@ -30,15 +30,14 @@ class SimulationModel:
                  coefficients[year_key], populations_collection[prev_year_key], complexity, var_type)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([pd.DataFrame(independent_vars), \
-                 pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
+                 pd.DataFrame({'error': error, 'Y' : Y})], axis=1)
 
             else:
                 independent_vars, error, Y = self.generate_variables(defaults, \
                  coefficients[year_key], populations_collection[prev_year_key], complexity)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([independent_vars, \
-                 pd.DataFrame({'Y' : Y, 'error': error})], axis=1)
-
+                 pd.DataFrame({'error': error, 'Y' : Y})], axis=1)
         return populations_collection
 
     # -------------------------------------------------
@@ -58,14 +57,14 @@ class SimulationModel:
         # Create empty dictionary of b independent variables (X1, X2, ..., Xb)
         independent_vars = {}
 
-        if var_type == 'continuous':
+        if var_type == 'C':
             # This for-loop scales normally distributed continuous values for X1, X2, ..., Xb
             for i in range(defaults['n_X']):
                 X = 'X'+ str(i+1)
                 independent_vars[X] = scale(populations_collection[X] + \
                  np.random.normal(0.0, 1.0, defaults['n_rows']))
 
-        elif var_type == 'hybrid':
+        elif var_type == 'H':
             # This for-loop creates normally distributed values for X1, X2, ..., Xb where
             #  some vars are binary and some are continuous
             for i in range(0, int(defaults['n_X']/2)):
@@ -81,13 +80,13 @@ class SimulationModel:
             print('This variable type is not included in the simulatiom model.')
 
         # Assign normally distributed values to be an error (same error overtime)
-        random.seed(42)
+        #random.seed(42)
         error = np.random.normal(0.0, coefficients['error'], defaults['n_rows'])
 
-        if complexity == 'linear':
+        if complexity == 'L':
             Y = self.calculate_dependent_var_linear(defaults, coefficients, independent_vars, error)
 
-        elif complexity == 'polynomial':
+        elif complexity == 'P':
             Y = self.calculate_dependent_var_polynomial(defaults, coefficients, independent_vars, error)
 
         else:
@@ -153,11 +152,11 @@ class SimulationModel:
 
         independent_vars = populations_collection[filter_col]
 
-        error = populations_collection['error']
+        error = np.random.normal(0.0, coefficients['error'], defaults['n_rows'])
 
-        if complexity == 'linear':
+        if complexity == 'L':
             Y = self.calculate_dependent_var_linear(defaults, coefficients, independent_vars, error)
-        elif complexity == 'polynomial':
+        elif complexity == 'P':
             Y = self.calculate_dependent_var_polynomial(defaults, coefficients, independent_vars, error)
         else:
             print('This type of complexity does not exist.')

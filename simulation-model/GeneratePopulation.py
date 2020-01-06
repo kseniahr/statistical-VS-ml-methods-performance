@@ -42,7 +42,7 @@ class GeneratePopulation():
 
     #-------------------------------------------------
 
-    def generate_population(self, complexity, var_type):
+    def generate_population(self, dimensionality, complexity, var_type):
         """
             Description: Artificially generated dataset saved into folder 'data'
             Input: none
@@ -54,13 +54,13 @@ class GeneratePopulation():
         # Create empty dictionary of b independent variables (X1, X2, ..., Xb)
         independent_vars = {}
 
-        if var_type == 'continuous':
+        if var_type == 'C':
             # This for-loop creates normally distributed continuous values for X1, X2, ..., Xb
             for i in range(self.defaults['n_X']):
                 X = 'X'+ str(i+1)
                 independent_vars[X] = np.random.normal(0.0, 1.0, self.defaults['n_rows'])
 
-        elif var_type == 'hybrid':
+        elif var_type == 'H':
             # This for-loop creates normally distributed values for X1, X2, ..., Xb where
             #  some vars are binary and some are continuous
 
@@ -78,12 +78,11 @@ class GeneratePopulation():
             print('This variable type is not included in the simulatiom model.')
 
         # Assign normally distributed values to be an error
-        random.seed(42)
         error = np.random.normal(0.0, coefficients_y1['error'], self.defaults['n_rows'])
 
-        if complexity == 'linear':
+        if complexity == 'L':
             Y = self.calculate_dependent_var_linear(coefficients_y1, independent_vars, error)
-        elif complexity == 'polynomial':
+        elif complexity == 'P':
             Y = self.calculate_dependent_var_polynomial(coefficients_y1, independent_vars, error)
         else:
             print('This type of complexity does not exist.')
@@ -94,8 +93,8 @@ class GeneratePopulation():
 
 
         # Export initial dataset for running the simulation
-        population.to_csv('data/init_population_' + complexity + '.csv', index = None, header=True)
-
+        population.to_csv('data/' + dimensionality + complexity + var_type + '.csv', index = None, header=True)
+        
         return coefficients_y1
 
     # -------------------------------------------------

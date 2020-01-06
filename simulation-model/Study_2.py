@@ -7,7 +7,7 @@ import copy
 
 class Study_2():
 
-    def __init__(self, defaults, coefficients, df, relationship_term, complexity, var_type):
+    def __init__(self, defaults, coefficients, df, relationship_term, dimensionality, complexity, var_type):
 
         """
         Description: This method is called when an object is created from a
@@ -18,6 +18,7 @@ class Study_2():
         self.coefficients = coefficients
         self.df = df
         self.relationship_term = relationship_term
+        self.dimensionality = dimensionality
         self.complexity = complexity
         self.var_type = var_type
 
@@ -75,7 +76,7 @@ class Study_2():
         simulation_obj = SimulationModel()
 
         populations_collection = simulation_obj.simulate_next_populations('study2', \
-         self.defaults, self.coefficients, populations_collection, self.complexity, self.var_type)
+         self.defaults, self.coefficients, populations_collection, self.dimensionality, self.complexity, self.var_type)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
          populations_collection, samples_list_collection)
@@ -87,7 +88,7 @@ class Study_2():
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
-         population_scores_gbr, 'Study 2: MSE overtime')
+         population_scores_gbr, 'Study 2: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
         print('Simulation of relationship change between input variables, including Linear Regression, \
         Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \

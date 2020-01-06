@@ -7,7 +7,7 @@ import copy
 
 class Study_1():
 
-    def __init__(self, defaults, coefficients, df, beta_change, complexity, var_type):
+    def __init__(self, defaults, coefficients, df, beta_change, dimensionality, complexity, var_type):
         """
         Description: This method is called when an object is created from a
         class and it allows the class to initialize the attributes of the class
@@ -17,6 +17,7 @@ class Study_1():
         self.coefficients = coefficients
         self.df = df
         self.beta_change = beta_change
+        self.dimensionality = dimensionality
         self.complexity = complexity
         self.var_type = var_type
 
@@ -70,7 +71,7 @@ class Study_1():
         simulation_obj = SimulationModel()
 
         populations_collection = simulation_obj.simulate_next_populations('study1', \
-         self.defaults, self.coefficients, populations_collection, self.complexity, self.var_type)
+         self.defaults, self.coefficients, populations_collection, self.dimensionality, self.complexity, self.var_type)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
          populations_collection, samples_list_collection)
@@ -81,11 +82,12 @@ class Study_1():
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
         # Now we create histograms that visualize the distribution of feature X1 changing overtime:
-        eval_obj.create_histograms(self.defaults, populations_collection, 'Study 1: distribution of X1')
+        eval_obj.create_histograms(self.defaults, populations_collection, 'Study 1: distribution of X1', self.dimensionality, self.complexity, self.var_type)
+        
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
-         population_scores_gbr, 'Study 1: MSE overtime')
+         population_scores_gbr, 'Study 1: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
         print('Simulation of distribution change of input variables, including Linear Regression, \
         Random Forest Regression and Gradient Boosting Regression on % 2d artificially \

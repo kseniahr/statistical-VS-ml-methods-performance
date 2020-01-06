@@ -238,7 +238,7 @@ class Evaluation:
 
     # Creates a Figure that represents MSE score on y-axis and Year on x-y_axis
     def create_plot_MSE(self, defaults, population_scores_mlr, population_scores_rfr, \
-     population_scores_gbr, name):
+     population_scores_gbr, name, dimensionality, complexity, var_type):
 
 
         list_x_axis = [x+2019 for x in range(defaults['n_years'])]
@@ -261,39 +261,39 @@ class Evaluation:
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         pl.plot(range(len(list_x_axis)), list_y_axis_mlr)
         pl.xticks(range(len(list_x_axis)),list_x_axis)
-        pl.title('MultipleLinearRegression', fontsize = 12)
+        pl.title('MultipleLinearRegression', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 15)
+        pl.ylim(0, 8)
 
         ax = pl.subplot(gs[1, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         pl.plot(range(len(list_x_axis)), list_y_axis_gbr)
         pl.xticks(range(len(list_x_axis)),list_x_axis)
-        pl.title('GradientBoostingRegressor', fontsize = 12)
+        pl.title('GradientBoostingRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 15)
+        pl.ylim(0, 8)
 
         ax = pl.subplot(gs[2, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         pl.plot(range(len(list_x_axis)), list_y_axis_rfr)
         pl.xticks(range(len(list_x_axis)),list_x_axis)
-        pl.title('RandomForestRegressor', fontsize = 12)
+        pl.title('RandomForestRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 15)
+        pl.ylim(0, 8)
 
         pl.tight_layout()
-        pl.savefig('plots/MSE_'+name+'.png')
+        pl.savefig('plots/MSE_' + dimensionality + complexity + var_type + '_' + name + '.png')
         pl.show()
 
     # -------------------------------------------------
 
     # Creates a Figure of t histograms that represent the distribution of each year of feature X1
-    def create_histograms(self, defaults, populations_collection, name):
+    def create_histograms(self, defaults, populations_collection, name, dimensionality, complexity, var_type):
         if defaults['n_years']<=5:
             gs = gridspec.GridSpec(1, defaults['n_years'])
             pl.rc('font', size = 6) # font of x and y axes
@@ -340,12 +340,12 @@ class Evaluation:
                     pl.hist(population['X1'], color = 'grey', edgecolor = 'black', alpha=.3)
 
         pl.tight_layout() # add space between subplots
-        pl.savefig('plots/Histograms_' + name + '.png')
+        pl.savefig('plots/Histograms_' + dimensionality + complexity + var_type + '_' + name + '.png')
         pl.show()
     # -------------------------------------------------
 
     # Creates a Figure of t heatmaps that represent the correlation between features
-    def create_correlation_plots(self, defaults, populations_collection, name):
+    def create_correlation_plots(self, defaults, populations_collection, name, dimensionality, complexity, var_type):
         gs = gridspec.GridSpec(1, 5)
         pl.rc('font', size = 6) # font of x and y axes
         pl.figure(name)
@@ -362,6 +362,6 @@ class Evaluation:
             pl.ylabel('Frequency')
             pl.matshow(corrs)
         pl.tight_layout() # add space between subplots
-        pl.savefig('plots/Correlation_' + name + '.png')
+        pl.savefig('plots/Correlation_' + dimensionality + complexity + var_type + '_' + name + '.png')
 
     # -------------------------------------------------
