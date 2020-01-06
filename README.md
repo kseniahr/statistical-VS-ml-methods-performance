@@ -51,7 +51,7 @@ python Main.py
 ```
 You will have to select which function will describe the data. The alternatives proposed in this study are a) linear regression function:
 
-![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%20&plus;%C3%82%C2%B7%C3%82%C2%B7%C3%82%C2%B7&plus;%5Cbeta%20iXi%20&plus;%20%5Cvarepsilon%251%251) 
+![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%20&plus;...&plus;%5Cbeta%20iXn%20&plus;%20%5Cvarepsilon%251%251%251) 
 
 or b) polynomial regression function:
 
