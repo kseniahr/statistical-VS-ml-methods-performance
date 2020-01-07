@@ -15,9 +15,9 @@ n_X           = 3           # Number of predictor variables (min = 3)
 start_year    = 2019        # Starting year
 n_years       = 10          # Number of years
 
-beta_change_experiment1 = 1.6 # Strength of beta coefficient increase
+beta_change_experiment1 = 1.3 # Strength of beta coefficient increase
 corr_term_experiment2   = 0.1
-target_mean_experiment3 = 10
+target_mean_experiment3 = 2
 
 user_input1   = input("Select type of a regression function: linear or polynomial => ")
 user_input2   = input("Choose type of a variable: continuous or hybrid => ")

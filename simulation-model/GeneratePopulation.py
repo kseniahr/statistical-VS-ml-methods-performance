@@ -34,9 +34,9 @@ class GeneratePopulation():
         for i in range(self.defaults['n_X']):
             # create name for a key in a dictionary. For example, 'beta1_y1'
             beta = "beta" + str(i+1)
-            # initialize value of a coefficient with either 1 or -1
+            # initialize value of a coefficient with values 1 
             # can be manually changed to any other values
-            coefficients_y1[beta] = np.random.choice(a = [1,-1])
+            coefficients_y1[beta] = np.random.choice(a = [1])
 
         return coefficients_y1
 
