@@ -94,7 +94,7 @@ class GeneratePopulation():
 
         # Export initial dataset for running the simulation
         population.to_csv('data/' + dimensionality + complexity + var_type + '.csv', index = None, header=True)
-        
+
         return coefficients_y1
 
     # -------------------------------------------------

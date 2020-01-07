@@ -1,13 +1,14 @@
-## This script evaluates the overtime performance if the distribution of input variables changes (X1,X2,X3)
+## This script evaluates the overtime performance if mean of the dependent variable beta_0 changes
 
 # Import objects
 from SimulationModel import SimulationModel
 from Evaluation import Evaluation
 import copy
 
-class Study_1():
+class Experiment_3():
 
-    def __init__(self, defaults, coefficients, df, beta_change, dimensionality, complexity, var_type):
+    def __init__(self, defaults, coefficients, df, mean_change, dimensionality, complexity, var_type):
+
         """
         Description: This method is called when an object is created from a
         class and it allows the class to initialize the attributes of the class
@@ -16,17 +17,16 @@ class Study_1():
         self.defaults = defaults
         self.coefficients = coefficients
         self.df = df
-        self.beta_change = beta_change
+        self.mean_change = mean_change
         self.dimensionality = dimensionality
         self.complexity = complexity
         self.var_type = var_type
 
-    #-------------------------------------------------
 
-    def create_beta_coefs(self):
+    def create_target_mean(self):
 
         """
-        Description: This method increases in beta1 coefficient overtime
+        Description: This method introduces unknown factor increase of target mean
         Input: none
         Output: Dictionary of coefficients for each year in the simulation
         """
@@ -39,19 +39,21 @@ class Study_1():
 
             item_copy = copy.copy(dict)
 
-            item_copy.update({'beta1': dict['beta1'] * self.beta_change})
+            item_copy.update({'intercept': (item_copy['intercept'] + 1) * self.mean_change})
 
             self.coefficients.update({year: item_copy})
 
             year = year + 1
 
         return self.coefficients
+
     #-------------------------------------------------
 
     def run_simulation(self):
         """
         Description: This method evaluates model performance when
-        the distribution of input variables changes (X1,X2,X3) overtime
+        mean of the dependent variable beta_0 changes overtime by 'mean_change'
+        value
         Input: none
         Output: Plots of MSE evolution overtime
         """
@@ -60,7 +62,8 @@ class Study_1():
         population_scores_rfr = {}
         population_scores_gbr = {}
 
-        self.coefficients = self.create_beta_coefs()
+        self.coefficients = self.create_target_mean()
+
 
         # Initialize a collection of year1 population as a dictionaty
         populations_collection = {self.defaults['start_year'] : self.df}
@@ -70,7 +73,7 @@ class Study_1():
 
         simulation_obj = SimulationModel()
 
-        populations_collection = simulation_obj.simulate_next_populations('study1', \
+        populations_collection = simulation_obj.simulate_next_populations('Experiment3', \
          self.defaults, self.coefficients, populations_collection, self.dimensionality, self.complexity, self.var_type)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
@@ -81,15 +84,11 @@ class Study_1():
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
-        # Now we create histograms that visualize the distribution of feature X1 changing overtime:
-        eval_obj.create_histograms(self.defaults, populations_collection, 'Study 1: distribution of X1', self.dimensionality, self.complexity, self.var_type)
-        
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
-         population_scores_gbr, 'Study 1: MSE overtime', self.dimensionality, self.complexity, self.var_type)
+         population_scores_gbr, 'Experiment 3: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
-        print('Simulation of distribution change of input variables, including Linear Regression, \
-        Random Forest Regression and Gradient Boosting Regression on % 2d artificially \
-        generated observations for each of % 2d years is finished.' %(self.defaults['n_rows'], \
-                                                                        self.defaults['n_years']))
+        print('Simulation of mean change of the dependent variable, including Linear Regression, \
+        Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \
+        generated observations for each of ' + str(self.defaults['n_years']) + ' years is finished.')

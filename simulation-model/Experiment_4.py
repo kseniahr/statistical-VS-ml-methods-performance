@@ -1,13 +1,13 @@
-## This script evaluates the overtime performance if relationship between input variables changes (B1,B2,B3)
+## This script evaluates the overtime performance of all 3 studies combined
 
 # Import objects
 from SimulationModel import SimulationModel
 from Evaluation import Evaluation
 import copy
 
-class Study_2():
+class Experiment_4():
 
-    def __init__(self, defaults, coefficients, df, relationship_term, dimensionality, complexity, var_type):
+    def __init__(self, defaults, coefficients, df, beta_change, relationship_term, mean_change, dimensionality, complexity, var_type):
 
         """
         Description: This method is called when an object is created from a
@@ -17,33 +17,34 @@ class Study_2():
         self.defaults = defaults
         self.coefficients = coefficients
         self.df = df
+        self.beta_change = beta_change
         self.relationship_term = relationship_term
+        self.mean_change = mean_change
         self.dimensionality = dimensionality
         self.complexity = complexity
         self.var_type = var_type
 
-    #-------------------------------------------------
-
-    def create_beta_coefs(self):
+    def create_concept_drift(self):
         """
-        Description: This method dencreases beta1 coefficient by 0.1 and
-        increases b3 by 0.1 overtime
+        Description: This method introduces unknown factor increase of target mean
         Input: none
         Output: Dictionary of coefficients for each year in the simulation
         """
+
         year = self.defaults['start_year'] + 1
 
-        for i in range(self.defaults['n_years'] - 1):
+        for i in range(self.defaults['n_years']-1):
 
-            # coefficients from the previous year get initialized as parameters for var 'year'
             dict = self.coefficients[year-1]
 
             item_copy = copy.copy(dict)
 
-            # beta1 coefficient for the next year decreases ...
-            # ... which leads to increase of beta3 coefficient
-            item_copy.update({'beta1': dict['beta1'] - self.relationship_term, \
-             'beta3': dict['beta3'] + self.relationship_term})
+            item_copy.update({'beta1': dict['beta1'] * self.beta_change})
+
+            item_copy.update({'intercept': dict['intercept'] + self.mean_change, \
+             'beta1': dict['beta1'] - self.relationship_term, \
+              'beta3': dict['beta3'] + self.relationship_term \
+               })
 
             self.coefficients.update({year: item_copy})
 
@@ -56,7 +57,7 @@ class Study_2():
     def run_simulation(self):
         """
         Description: This method evaluates model performance when
-        relationship between input variables changes overtime
+        concept drift is introduced
         Input: none
         Output: Plots of MSE evolution overtime
         """
@@ -65,7 +66,7 @@ class Study_2():
         population_scores_rfr = {}
         population_scores_gbr = {}
 
-        self.coefficients = self.create_beta_coefs()
+        self.coefficients = self.create_concept_drift()
 
         # Initialize a collection of year1 population as a dictionaty
         populations_collection = {self.defaults['start_year'] : self.df}
@@ -75,7 +76,7 @@ class Study_2():
 
         simulation_obj = SimulationModel()
 
-        populations_collection = simulation_obj.simulate_next_populations('study2', \
+        populations_collection = simulation_obj.simulate_next_populations('Experiment4', \
          self.defaults, self.coefficients, populations_collection, self.dimensionality, self.complexity, self.var_type)
 
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
@@ -86,10 +87,14 @@ class Study_2():
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
+        # Now we create histograms that visualize the distribution of feature X1 changing overtime:
+        eval_obj.create_histograms(self.defaults, populations_collection, 'Experiment 4: distribution of X1', self.dimensionality, self.complexity, self.var_type)
+
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
-         population_scores_gbr, 'Study 2: MSE overtime', self.dimensionality, self.complexity, self.var_type)
+         population_scores_gbr, 'Experiment 4 concept drift: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
-        print('Simulation of relationship change between input variables, including Linear Regression, \
-        Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \
-        generated observations for each of ' + str(self.defaults['n_years']) + ' years is finished.')
+        print('Simulation of Concept Drift, including Linear Regression, \
+        Random Forest Regression and Gradient Boosting Regression on % 2d artificially \
+        generated observations for each of % 2d years is finished.' %(self.defaults['n_rows'], \
+                                                                        self.defaults['n_years']))

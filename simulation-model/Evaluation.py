@@ -38,7 +38,9 @@ class Evaluation:
              samples_list_collection[year_key], self.gbr)
 
             year_key = year_key + 1
-
+        print(population_scores_mlr)
+        print(population_scores_rfr)
+        print(population_scores_gbr)
         return  population_scores_mlr, population_scores_rfr, population_scores_gbr
 
     # -------------------------------------------------
@@ -264,7 +266,7 @@ class Evaluation:
         pl.title('MultipleLinearRegression', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 8)
+        pl.ylim(0, 10)
 
         ax = pl.subplot(gs[1, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
@@ -274,7 +276,7 @@ class Evaluation:
         pl.title('GradientBoostingRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 8)
+        pl.ylim(0, 10)
 
         ax = pl.subplot(gs[2, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
@@ -284,7 +286,7 @@ class Evaluation:
         pl.title('RandomForestRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
-        pl.ylim(0, 8)
+        pl.ylim(0, 10)
 
         pl.tight_layout()
         pl.savefig('plots/MSE_' + dimensionality + complexity + var_type + '_' + name + '.png')

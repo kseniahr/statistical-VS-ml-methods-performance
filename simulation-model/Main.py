@@ -1,8 +1,8 @@
 from GeneratePopulation import GeneratePopulation
-from Study_1 import Study_1
-from Study_2 import Study_2
-from Study_3 import Study_3
-from Study_4 import Study_4
+from Experiment_1 import Experiment_1
+from Experiment_2 import Experiment_2
+from Experiment_3 import Experiment_3
+from Experiment_4 import Experiment_4
 
 
 # Import libraries
@@ -15,9 +15,9 @@ n_X           = 3           # Number of predictor variables (min = 3)
 start_year    = 2019        # Starting year
 n_years       = 10          # Number of years
 
-beta_change_study1 = 1.6 # Strength of beta coefficient increase
-corr_term_study2   = 0.1
-target_mean_study3 = 10 
+beta_change_experiment1 = 1.6 # Strength of beta coefficient increase
+corr_term_experiment2   = 0.1
+target_mean_experiment3 = 10
 
 user_input1   = input("Select type of a regression function: linear or polynomial => ")
 user_input2   = input("Choose type of a variable: continuous or hybrid => ")
@@ -38,7 +38,7 @@ if user_input1 == 'linear':
     complexity = 'L'
 elif user_input1 == 'polynomial':
     complexity = 'P'
-else: 
+else:
     raise Exception('This type of complexity does not exist') # error message
 
 
@@ -46,13 +46,13 @@ if user_input2 == 'continuous':
     var_type = 'C'
 elif user_input2 == 'hybrid':
     var_type = 'H'
-else: 
+else:
     raise Exception('This type of variables is incorrect. The value of var_type was: {}'.format(user_input2)) # error message
-    
+
 defaults = {'n_rows': n_rows, 'n_rows_sample': n_rows_sample, 'n_samples': n_samples, \
             'n_years': n_years, 'start_year': start_year, 'n_X': n_X}
 
-start = time.time() 
+start = time.time()
 
 obj = GeneratePopulation(defaults)
 
@@ -72,30 +72,28 @@ print(dataset.describe(include = 'all'))
 # Initialize a dictionary where key is a year and value is a dictionary of coefficients
 coefficients = {defaults['start_year']: coefficients_y1}
 
-study = input("Choose which study to run (study1, study2, study3 or study4): ")
+experiment = int(input("Choose which experiment to run (1, 2, 3 or 4): "))
 
 # Track execution time
 start = time.time()
 
-# Run study based on user input
-if study == 'study1':
-    study1 = Study_1(defaults, coefficients, dataset, beta_change_study1, dimensionality, complexity, var_type)
-    study1.run_simulation()
-elif study == 'study2':
-    study2 = Study_2(defaults, coefficients, dataset, corr_term_study2, dimensionality, complexity, var_type)
-    study2.run_simulation()
-elif study == 'study3':
-    study3 = Study_3(defaults, coefficients, dataset, target_mean_study3, dimensionality, complexity, var_type)
-    study3.run_simulation()
-elif study == 'study4':
-    study4 = Study_4(defaults, coefficients, dataset, beta_change_study1, \
-                     corr_term_study2, target_mean_study3, dimensionality, complexity, var_type)
-    study4.run_simulation()
+# Run experiment based on user input
+if experiment   == 1:
+    experiment1 = Experiment_1(defaults, coefficients, dataset, beta_change_experiment1, dimensionality, complexity, var_type)
+    experiment1.run_simulation()
+elif experiment == 2:
+    experiment2 = Experiment_2(defaults, coefficients, dataset, corr_term_experiment2, dimensionality, complexity, var_type)
+    experiment2.run_simulation()
+elif experiment == 3:
+    experiment3 = Experiment_3(defaults, coefficients, dataset, target_mean_experiment3, dimensionality, complexity, var_type)
+    experiment3.run_simulation()
+elif experiment == 4:
+    experiment4 = Experiment_4(defaults, coefficients, dataset, beta_change_experiment1, \
+                     corr_term_experiment2, target_mean_experiment3, dimensionality, complexity, var_type)
+    experiment4.run_simulation()
 else:
-    print('This study does not exist. Please select an existing study')
-    
-end = time.time() 
+    print('This experiment does not exist. Please select an existing experiment')
+
+end = time.time()
 
 print('Execution Time: % 2d s' %(end - start)) # Time in seconds
-
-
