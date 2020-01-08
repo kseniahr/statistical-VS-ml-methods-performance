@@ -54,7 +54,9 @@ or b) polynomial regression function:
 
 ![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%5E%7B2%7D%20&plus;%20.%20.%20.%20&plus;%5Cbeta%20iXn%5E%7Bn%7D%20&plus;%20%5Cvarepsilon%251%251)
 
-Then, you will have to select which variables should be used to generate a dataset. The alternatives proposed in this study are a) continuous
+Then, you will have to select which variables should be used to generate a dataset. The alternatives proposed in this study are 
+
+a) continuous
 
 b) hybrid (both continuous and binary variables)
 
