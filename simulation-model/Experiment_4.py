@@ -84,6 +84,7 @@ class Experiment_4():
 
         eval_obj = Evaluation()
 
+        eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 4: Corr', self.dimensionality, self.complexity, self.var_type)
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 

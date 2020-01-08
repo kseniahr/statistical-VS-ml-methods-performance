@@ -1,6 +1,8 @@
 
 # Import visualization libraries
 import matplotlib.pylab as pl
+import seaborn as sns
+
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import MaxNLocator
 # Import forecasting libraries
@@ -178,8 +180,9 @@ class Evaluation:
         ax = pl.subplot(gs[0, 0]) # row 2, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        pl.plot(range(len(list_x_axis)), list_y_axis_mlr)
+        pl.plot(range(len(list_x_axis)), list_y_axis_mlr, color = 'black', linestyle = '-')
         pl.xticks(range(len(list_x_axis)),list_x_axis)
+        pl.legend(['MLR'])
         pl.title('MultipleLinearRegression', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
@@ -188,8 +191,9 @@ class Evaluation:
         ax = pl.subplot(gs[1, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        pl.plot(range(len(list_x_axis)), list_y_axis_gbr)
+        pl.plot(range(len(list_x_axis)), list_y_axis_gbr, color = 'black', linestyle = '--')
         pl.xticks(range(len(list_x_axis)),list_x_axis)
+        pl.legend(['GBR'])
         pl.title('GradientBoostingRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
@@ -198,8 +202,9 @@ class Evaluation:
         ax = pl.subplot(gs[2, 0]) # row 0, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-        pl.plot(range(len(list_x_axis)), list_y_axis_rfr)
+        pl.plot(range(len(list_x_axis)), list_y_axis_rfr, color = 'black', linestyle = '--')
         pl.xticks(range(len(list_x_axis)),list_x_axis)
+        pl.legend(['RFR'])
         pl.title('RandomForestRegressor', fontsize = 9)
         pl.ylabel('MSE', fontsize = 9)
         pl.xlim(0, len(list_x_axis))
@@ -265,22 +270,12 @@ class Evaluation:
 
     # Creates a Figure of t heatmaps that represent the correlation between features
     def create_correlation_plots(self, defaults, populations_collection, name, dimensionality, complexity, var_type):
-        gs = gridspec.GridSpec(1, 5)
-        pl.rc('font', size = 6) # font of x and y axes
-        pl.figure(name)
 
         year_key = defaults['start_year']
-
-        for p in range(0,5):
-
-            population = populations_collection[year_key]
+        # Basic correlogram
+        for p in range(defaults['n_years']):
+            df = populations_collection[year_key].drop('error', axis = 1)
+            sns_plot = sns.pairplot(df)
+            sns_plot.savefig('plots/Correlation_' + dimensionality + complexity + var_type + '_' + name + str(p+1)+  '.png')
             year_key = year_key + 1
-            corrs = population.corr()
-            ax = pl.subplot(gs[0, p]) # row 0, col 0
-            pl.title('Correlation Matrix Year'+str(p+1), fontsize = 12)
-            pl.ylabel('Frequency')
-            pl.matshow(corrs)
-        pl.tight_layout() # add space between subplots
-        pl.savefig('plots/Correlation_' + dimensionality + complexity + var_type + '_' + name + '.png')
-
     # -------------------------------------------------

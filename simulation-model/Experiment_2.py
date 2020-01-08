@@ -78,17 +78,20 @@ class Experiment_2():
         populations_collection = simulation_obj.simulate_next_populations('Experiment2', \
          self.defaults, self.coefficients, populations_collection, self.dimensionality, self.complexity, self.var_type)
 
+
         samples_list_collection = simulation_obj.create_samples_collection(self.defaults, \
          populations_collection, samples_list_collection)
 
         eval_obj = Evaluation()
 
+        eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 2: Corr'
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Experiment 2: MSE overtime', self.dimensionality, self.complexity, self.var_type)
+
 
         print('Simulation of relationship change between input variables, including Linear Regression, \
         Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \

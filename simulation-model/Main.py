@@ -16,7 +16,7 @@ start_year    = 2019        # Starting year
 n_years       = 10          # Number of years
 
 beta_change_experiment1 = 1.3 # Strength of beta coefficient increase
-corr_term_experiment2   = 0.1
+corr_term_experiment2   = 0.2
 target_mean_experiment3 = 2
 
 user_input1   = input("Select type of a regression function: linear or polynomial => ")
