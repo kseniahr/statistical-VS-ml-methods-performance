@@ -176,6 +176,7 @@ class Evaluation:
         # Create 3x1 sub plots
         gs = gridspec.GridSpec(3, 1)
         pl.figure(name)
+        pl.rcParams['figure.dpi'] = 300
 
         ax = pl.subplot(gs[0, 0]) # row 2, col 0
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))

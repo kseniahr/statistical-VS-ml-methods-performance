@@ -84,9 +84,8 @@ class Experiment_2():
 
         eval_obj = Evaluation()
 
-        eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 2: Corr'
-        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
-         population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
+        eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 2: Corr', \
+         self.dimensionality, self.complexity, self.var_type)
 
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
