@@ -30,12 +30,9 @@ Open simulation-model/Main.py with a text editor (I am using Atom.io) and define
 ```
 # Define data generation settings:
 
-N = 100000  # Observations in the population
-b = 3     # Number of predictor variables
-k = 100    # Number of samples
-n = 1000   # Observations in each sample
-y = 2019  # Starting year
-t = 10    # Number of years
+n_X           = 3           # Number of predictor variables (min = 3)
+start_year    = 2019        # Starting year
+n_years       = 10          # Number of years
 ```
 ## Run simulation
 Navigate to a folder ./simulation-model:
@@ -57,15 +54,23 @@ or b) polynomial regression function:
 
 ![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%5E%7B2%7D%20&plus;%20.%20.%20.%20&plus;%5Cbeta%20iXn%5E%7Bn%7D%20&plus;%20%5Cvarepsilon%251%251)
 
-Then, you will have to choose which of the following studies do you want to run:
+Then, you will have to select which variables should be used to generate a dataset. The alternatives proposed in this study are 
 
-a) study1 - evaluates the overtime performance if the distribution of input variables changes (X1,X2,..., Xn)
+a) continuous
 
-b) study2 - evaluates the overtime performance if relationship between input variables changes (B1,B2,...,Bi)
+b) hybrid (both continuous and binary variables)
 
-c) study3 - evaluates the overtime performance if mean of the dependent variable changes
+Then, you will be asked about the population size, sample size and number of samples.
 
-d) study4 - evaluates the overtime performance of all 3 studies combined
+Then, you will have to choose which of the following experiments do you want to run:
+
+a) 1 - evaluates the overtime performance if the distribution of input variables changes (X1,X2,..., Xn)
+
+b) 2 - evaluates the overtime performance if relationship between input variables changes (B1,B2,...,Bi)
+
+c) 3 - evaluates the overtime performance if mean of the dependent variable changes
+
+d) 4 - evaluates the overtime performance of all 3 studies combined
 
 After the script Main.py is executed, the figures of MSE performance will be saved to the folder ./simulation-model/plots/
 
