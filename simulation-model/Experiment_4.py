@@ -8,7 +8,6 @@ import copy
 class Experiment_4():
 
     def __init__(self, defaults, coefficients, df, beta_change, relationship_term, mean_change, dimensionality, complexity, var_type):
-
         """
         Description: This method is called when an object is created from a
         class and it allows the class to initialize the attributes of the class
@@ -84,8 +83,11 @@ class Experiment_4():
 
         eval_obj = Evaluation()
 
-        eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 4: Corr', \
-         self.dimensionality, self.complexity, self.var_type)
+        population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
+         population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
+
+        # eval_obj.create_correlation_plots(self.defaults, populations_collection, 'Experiment 4: Corr', \
+        #  self.dimensionality, self.complexity, self.var_type)
 
         # Now we create histograms that visualize the distribution of feature X1 changing overtime:
         eval_obj.create_histograms(self.defaults, populations_collection, 'Experiment 4: distribution of X1', self.dimensionality, self.complexity, self.var_type)
@@ -94,7 +96,4 @@ class Experiment_4():
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Experiment 4 concept drift: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
-        print('Simulation of Concept Drift, including Linear Regression, \
-        Random Forest Regression and Gradient Boosting Regression on % 2d artificially \
-        generated observations for each of % 2d years is finished.' %(self.defaults['n_rows'], \
-                                                                        self.defaults['n_years']))
+        print('Experiment 4 on % 2d artificially generated observations for % 2d years is finished.' %(self.defaults['n_rows'], self.defaults['n_years']))

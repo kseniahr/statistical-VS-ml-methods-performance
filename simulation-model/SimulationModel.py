@@ -24,7 +24,7 @@ class SimulationModel:
             year_key = year_key + 1
 
             # Generate exogene variables (including latent variables like prediction-error)
-            if study_name == 'study1' or study_name == 'study4':
+            if study_name == 'Experiment1' or study_name == 'Experiment4':
 
                 independent_vars, error, Y = self.change_vars_distribution(defaults, \
                  coefficients[year_key], populations_collection[prev_year_key], complexity, var_type)
@@ -34,7 +34,7 @@ class SimulationModel:
 
             else:
                 independent_vars, error, Y = self.generate_variables(defaults, \
-                 coefficients[year_key], populations_collection[prev_year_key], complexity)
+                 coefficients[year_key], populations_collection[prev_year_key], complexity, study_name)
                 # Combine dependent and independent variables in a data-frame
                 populations_collection[year_key] = pd.concat([independent_vars, \
                  pd.DataFrame({'error': error, 'Y' : Y})], axis=1)
@@ -58,14 +58,14 @@ class SimulationModel:
         independent_vars = {}
 
         if var_type == 'C':
-            # This for-loop scales normally distributed continuous values for X1, X2, ..., Xb
+            # Scale normally distributed continuous values for X1, X2, ..., Xb
             for i in range(defaults['n_X']):
                 X = 'X'+ str(i+1)
                 independent_vars[X] = scale(populations_collection[X] + \
                  np.random.normal(0.0, 1.0, defaults['n_rows']))
 
         elif var_type == 'H':
-            # This for-loop creates normally distributed values for X1, X2, ..., Xb where
+            # Creates normally distributed values for X1, X2, ..., Xb where
             #  some vars are binary and some are continuous
             for i in range(0, int(defaults['n_X']/2)):
                 X = 'X'+ str(i+1)
@@ -138,10 +138,10 @@ class SimulationModel:
 
     # -------------------------------------------------
 
-    def generate_variables(self, defaults, coefficients, populations_collection, complexity):
+    def generate_variables(self, defaults, coefficients, populations_collection, complexity, study_name):
         """
             Description: Generates exogene variables (including latent variables
-            like prediction-error)
+            like prediction-error) and applies multicollinearity
             Input: List of defaults, list of coefficients
             Output: List of X1, X2, X3 values, error, dependent variable Y (target)
         """
@@ -152,6 +152,10 @@ class SimulationModel:
 
         independent_vars = populations_collection[filter_col]
 
+        # Apply multicollinearity
+        if study_name == 'Experiment2':
+            independent_vars['X3'] = (independent_vars['X1'] + independent_vars['X2'])/2
+            
         error = np.random.normal(0.0, coefficients['error'], defaults['n_rows'])
 
         if complexity == 'L':

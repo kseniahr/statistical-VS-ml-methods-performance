@@ -41,28 +41,13 @@ Navigate to a folder ./simulation-model:
 ```bash
 cd /simulation-model
 ```
-and type in 
+and type in
 
 ```bash
 python Main.py
 ```
-You will have to select which function will describe the data. The alternatives proposed in this study are a) linear regression function:
 
-![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%20&plus;...&plus;%5Cbeta%20iXn%20&plus;%20%5Cvarepsilon%251%251%251) 
-
-or b) polynomial regression function:
-
-![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%5E%7B2%7D%20&plus;%20.%20.%20.%20&plus;%5Cbeta%20iXn%5E%7Bn%7D%20&plus;%20%5Cvarepsilon%251%251)
-
-Then, you will have to select which variables should be used to generate a dataset. The alternatives proposed in this study are 
-
-a) continuous
-
-b) hybrid (both continuous and binary variables)
-
-Then, you will be asked about the population size, sample size and number of samples.
-
-Then, you will have to choose which of the following experiments do you want to run:
+You will have to choose which of the following experiments do you want to run:
 
 a) 1 - evaluates the overtime performance if the distribution of input variables changes (X1,X2,..., Xn)
 
@@ -72,11 +57,26 @@ c) 3 - evaluates the overtime performance if mean of the dependent variable chan
 
 d) 4 - evaluates the overtime performance of all 3 studies combined
 
+Also, you will have to select which function will describe the data. The alternatives proposed in this study are a) linear regression function:
+
+![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%20&plus;...&plus;%5Cbeta%20iXn%20&plus;%20%5Cvarepsilon%251%251%251)
+
+or b) polynomial regression function:
+
+![equation](https://latex.codecogs.com/gif.latex?Y%20%3D%20%5Cbeta_%7B%7D%200%20&plus;%5Cbeta_%7B%7D%201%20X_%7B%7D%201&plus;%5Cbeta_%7B%7D%202%20X_%7B%7D%202%5E%7B2%7D%20&plus;%20.%20.%20.%20&plus;%5Cbeta%20iXn%5E%7Bn%7D%20&plus;%20%5Cvarepsilon%251%251)
+
+Then, you will have to select which variables should be used to generate a dataset. The alternatives proposed in this study are
+
+a) continuous
+
+b) hybrid (both continuous and binary variables)
+
+Then, you will be asked about the population size, sample size and number of samples.
+
 After the script Main.py is executed, the figures of MSE performance will be saved to the folder ./simulation-model/plots/
 
 
 ## Contributing
-Pull requests are welcome on a separatelly created branch 'development'. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome on a separately created branch 'development'. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update simulation models as appropriate.
-

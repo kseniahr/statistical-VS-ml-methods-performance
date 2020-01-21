@@ -84,12 +84,8 @@ class Experiment_1():
         # Now we create histograms that visualize the distribution of feature X1 changing overtime:
         eval_obj.create_histograms(self.defaults, populations_collection, 'Experiment 1: distribution of X1', self.dimensionality, self.complexity, self.var_type)
 
-
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Experiment 1: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
-        print('Simulation of distribution change of input variables, including Linear Regression, \
-        Random Forest Regression and Gradient Boosting Regression on % 2d artificially \
-        generated observations for each of % 2d years is finished.' %(self.defaults['n_rows'], \
-                                                                        self.defaults['n_years']))
+        print('First experiment on % 2d artificially generated observations for % 2d years is finished.' %(self.defaults['n_rows'], self.defaults['n_years']))

@@ -1,10 +1,9 @@
-
 # Import visualization libraries
 import matplotlib.pylab as pl
 import seaborn as sns
-
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import MaxNLocator
+
 # Import forecasting libraries
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -44,12 +43,10 @@ class Evaluation:
 
             year_key = year_key + 1
 
-        print(population_scores_mlr)
-        print(population_scores_rfr)
-        print(population_scores_gbr)
         return  population_scores_mlr, population_scores_rfr, population_scores_gbr
 
     # -------------------------------------------------
+
     # Fit LinearRegression to all samples of Y1, Y2, ..... Yt
     def fit_lr(self, defaults, samples_list, stat_model, year, mlr_model):
 
@@ -80,7 +77,7 @@ class Evaluation:
         # Return average accuracy score value of k samples
         return scores_mlr, mlr_model
 
-
+    # -------------------------------------------------
 
     # Fit RandomForestRegressor to all samples of Y1, Y2, ..... Yt (untuned)
     def fit_rfr(self, defaults, samples_list, ML_model, year, rfr_model):
@@ -158,19 +155,13 @@ class Evaluation:
     # -------------------------------------------------
 
     # Creates a Figure that represents MSE score on y-axis and Year on x-y_axis
-    def create_plot_MSE(self, defaults, population_scores_mlr, population_scores_rfr, \
-     population_scores_gbr, name, dimensionality, complexity, var_type):
-
+    def create_plot_MSE(self, defaults, population_scores_mlr, population_scores_rfr, population_scores_gbr, name, dimensionality, complexity, var_type):
 
         list_x_axis = [x+2019 for x in range(defaults['n_years'])]
 
-        list_y_axis_mlr = [population_scores_mlr[defaults['start_year']+x]['MSE'] \
-         for x in range(defaults['n_years'])]
-        list_y_axis_gbr = [population_scores_gbr[defaults['start_year']+x]['MSE'] \
-         for x in range(defaults['n_years'])]
-        list_y_axis_rfr = [population_scores_rfr[defaults['start_year']+x]['MSE'] \
-         for x in range(defaults['n_years'])]
-
+        list_y_axis_mlr = [population_scores_mlr[defaults['start_year']+x]['MSE'] for x in range(defaults['n_years'])]
+        list_y_axis_gbr = [population_scores_gbr[defaults['start_year']+x]['MSE'] for x in range(defaults['n_years'])]
+        list_y_axis_rfr = [population_scores_rfr[defaults['start_year']+x]['MSE'] for x in range(defaults['n_years'])]
 
 
         # Create 3x1 sub plots
@@ -213,7 +204,6 @@ class Evaluation:
 
         pl.tight_layout()
         pl.savefig('plots/MSE_' + dimensionality + complexity + var_type + '_' + name + '.png')
-        pl.show()
 
     # -------------------------------------------------
 
@@ -266,7 +256,6 @@ class Evaluation:
 
         pl.tight_layout() # add space between subplots
         pl.savefig('plots/Histograms_' + dimensionality + complexity + var_type + '_' + name + '.png')
-        pl.show()
     # -------------------------------------------------
 
     # Creates a Figure of t heatmaps that represent the correlation between features
@@ -275,7 +264,7 @@ class Evaluation:
         year_key = defaults['start_year']
         # Basic correlogram
         for p in range(defaults['n_years']):
-            df = populations_collection[year_key].drop('error', axis = 1)
+            df = populations_collection[year_key].drop(['error', 'Y'], axis = 1)
             sns_plot = sns.pairplot(df)
             sns_plot.savefig('plots/Correlation_' + dimensionality + complexity + var_type + '_' + name + str(p+1)+  '.png')
             year_key = year_key + 1

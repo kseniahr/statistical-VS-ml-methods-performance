@@ -15,10 +15,11 @@ n_X           = 3           # Number of predictor variables (min = 3)
 start_year    = 2019        # Starting year
 n_years       = 10          # Number of years
 
-beta_change_experiment1 = 1.3 # Strength of beta coefficient increase
+beta_change_experiment1 = 1.3
 corr_term_experiment2   = 0.2
 target_mean_experiment3 = 2
 
+experiment    = int(input("Choose which experiment to run (1, 2, 3 or 4): "))
 user_input1   = input("Select type of a regression function: linear or polynomial => ")
 user_input2   = input("Choose type of a variable: continuous or hybrid => ")
 n_rows        = int(input("Number of observations: => "))
@@ -59,20 +60,14 @@ obj = GeneratePopulation(defaults)
 # Get the coefficients from a generated population
 coefficients_y1 = obj.generate_population(dimensionality, complexity, var_type)
 
-print(coefficients_y1)
-
 generation_time = time.time()
 print('Data Generation Time: % 2d s' %(generation_time - start)) # Time in seconds
 
 # Import dataset
 dataset = pd.read_csv('data/' + dimensionality + complexity + var_type + '.csv', sep = ",")
 
-print(dataset.describe(include = 'all'))
-
 # Initialize a dictionary where key is a year and value is a dictionary of coefficients
 coefficients = {defaults['start_year']: coefficients_y1}
-
-experiment = int(input("Choose which experiment to run (1, 2, 3 or 4): "))
 
 # Track execution time
 start = time.time()
@@ -96,4 +91,4 @@ else:
 
 end = time.time()
 
-print('Execution Time: % 2d s' %(end - start)) # Time in seconds
+print('Simulation Time: % 2d s' %(end - start)) # Time in seconds

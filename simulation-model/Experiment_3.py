@@ -64,7 +64,6 @@ class Experiment_3():
 
         self.coefficients = self.create_target_mean()
 
-
         # Initialize a collection of year1 population as a dictionaty
         populations_collection = {self.defaults['start_year'] : self.df}
 
@@ -84,11 +83,8 @@ class Experiment_3():
         population_scores_mlr, population_scores_rfr, population_scores_gbr = eval_obj.train(self.defaults, \
          population_scores_mlr, population_scores_rfr, population_scores_gbr, samples_list_collection)
 
-
         # Now we create plots that visualize MSE of each model for a timespan of t years
         eval_obj.create_plot_MSE(self.defaults, population_scores_mlr, population_scores_rfr, \
          population_scores_gbr, 'Experiment 3: MSE overtime', self.dimensionality, self.complexity, self.var_type)
 
-        print('Simulation of mean change of the dependent variable, including Linear Regression, \
-        Random Forest Regression and Gradient Boosting Regression on '+ str(self.defaults['n_rows']) + ' artificially \
-        generated observations for each of ' + str(self.defaults['n_years']) + ' years is finished.')
+        print('Experiment 3 on '+ str(self.defaults['n_rows']) + ' artificially generated observations for ' + str(self.defaults['n_years']) + ' years is finished.')
